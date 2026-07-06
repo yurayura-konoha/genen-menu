@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>減塩外食ナビ</title>
+<meta name="theme-color" content="#0e9488">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="減塩ナビ">
+<style>
+  :root{
+    --accent:#0e9488;
+    --accent-light:#e6f5f3;
+    --bg:#f7f8f7;
+    --card:#ffffff;
+    --text:#22302e;
+    --muted:#6b7c79;
+    --warn:#e08a00;
+    --over:#d64545;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    padding-bottom:130px;
+  }
+  header{
+    background:var(--accent);color:#fff;padding:18px 20px 14px;
+  }
+  header h1{font-size:1.25rem}
+  header p{font-size:.8rem;opacity:.9}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  section{margin-bottom:22px}
+  h2{font-size:1rem;margin-bottom:8px;color:var(--text)}
+  .hint{font-size:.75rem;color:var(--muted);margin-bottom:8px}
+
+  /* 目標塩分 */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .chip{
+    border:1.5px solid var(--accent);background:#fff;color:var(--accent);
+    border-radius:999px;padding:6px 16px;font-size:.9rem;cursor:pointer;font-weight:600;
+  }
+  .chip.active{background:var(--accent);color:#fff}
+  .chips input{
+    width:70px;padding:6px 8px;border:1.5px solid #cfd8d6;border-radius:8px;
+    font-size:.9rem;
+  }
+
+  /* 店舗 */
+  .stores{display:flex;gap:8px;flex-wrap:wrap}
+  .store-btn{
+    border:1.5px solid #cfd8d6;background:#fff;border-radius:var(--radius);
+    padding:10px 14px;font-size:.95rem;cursor:pointer;font-weight:600;color:var(--text);
+  }
+  .store-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+
+  .tip{
+    background:var(--accent-light);border-radius:var(--radius);
+    padding:10px 14px;font-size:.82rem;color:#0b6b62;margin-top:10px;
+  }
+
+  /* 組み合わせカード */
+  .combo{
+    background:var(--card);border-radius:var(--radius);padding:14px 16px;
+    margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .combo-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .combo-rank{font-size:.75rem;font-weight:700;color:var(--accent)}
+  .combo-total{font-size:.95rem;font-weight:700}
+  .combo-total small{font-weight:400;color:var(--muted);margin-left:8px}
+  .combo ul{list-style:none}
+  .combo li{
+    display:flex;justify-content:space-between;font-size:.9rem;
+    padding:3px 0;border-bottom:1px dashed #eceeed;
+  }
+  .combo li:last-child{border-bottom:none}
+  .combo li .g{color:var(--muted);font-size:.82rem;white-space:nowrap;margin-left:10px}
+  .badge{
+    display:inline-block;font-size:.68rem;background:#eef1f0;color:var(--muted);
+    border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:middle;
+  }
+  .badge.adj{
+    background:var(--accent);color:#fff;font-weight:700;
+  }
+  .combo.near{border-left:4px solid var(--warn)}
+  .combo.near .combo-rank{color:var(--warn)}
+  .combo.near .combo-total{color:var(--warn)}
+
+  /* 自分で選ぶ */
+  .cat-title{font-size:.8rem;font-weight:700;color:var(--muted);margin:14px 0 6px}
+  .item{
+    display:flex;align-items:center;gap:10px;background:var(--card);
+    border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,.05);
+  }
+  .item input{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0}
+  .item .name{flex:1;font-size:.92rem}
+  .item .note{display:block;font-size:.72rem;color:var(--muted)}
+  .item .nums{text-align:right;font-size:.85rem;white-space:nowrap}
+  .item .nums small{display:block;color:var(--muted);font-size:.72rem}
+  .item.adj-row{
+    margin-left:28px;background:var(--accent-light);
+    padding:7px 12px;
+  }
+  .item.adj-row .name{font-size:.85rem;color:#0b6b62;font-weight:600}
+  .item.adj-row .nums{color:#0b6b62;font-weight:700}
+
+  /* 合計バー */
+  #total-bar{
+    position:fixed;left:0;right:0;bottom:0;background:#fff;
+    box-shadow:0 -2px 10px rgba(0,0,0,.1);padding:10px 16px 14px;
+  }
+  #total-bar .inner{max-width:640px;margin:0 auto}
+  #total-bar .row{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600}
+  #total-bar .row .status{font-size:.8rem}
+  .meter{height:8px;background:#e7ebea;border-radius:99px;margin-top:6px;overflow:hidden}
+  .meter div{height:100%;background:var(--accent);border-radius:99px;transition:width .2s,background .2s}
+
+  /* 今日の記録 */
+  .day-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .day-nums{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;font-weight:600;flex-wrap:wrap;gap:4px}
+  .day-nums input{width:56px;padding:2px 6px;border:1.5px solid #cfd8d6;border-radius:6px;font-size:.9rem;text-align:right}
+  .day-remain{color:var(--accent)}
+  .day-remain.over{color:var(--over)}
+  .entry{display:flex;align-items:center;gap:8px;font-size:.85rem;padding:7px 0;border-bottom:1px dashed #eceeed}
+  .entry .slot{background:var(--accent-light);color:#0b6b62;font-size:.7rem;font-weight:700;border-radius:4px;padding:1px 6px;white-space:nowrap}
+  .entry .desc{flex:1;line-height:1.4}
+  .entry .desc small{display:block;color:var(--muted);font-size:.72rem}
+  .entry .g{font-weight:700;white-space:nowrap}
+  .entry .del{border:none;background:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:2px 6px}
+  .use-remaining{
+    margin-top:10px;width:100%;border:1.5px solid var(--accent);background:#fff;color:var(--accent);
+    border-radius:10px;padding:8px;font-size:.88rem;font-weight:700;cursor:pointer;
+  }
+  .empty-day{font-size:.82rem;color:var(--muted);padding:6px 0}
+
+  /* お気に入り */
+  .fav{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .fav .desc{flex:1;font-size:.88rem;line-height:1.4}
+  .fav .desc small{display:block;color:var(--muted);font-size:.72rem}
+  .fav button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:5px 10px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
+  .fav .del{border-color:#cfd8d6;color:var(--muted)}
+
+  /* 記録ボタン(組み合わせカード・合計バー) */
+  .log-row{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+  .log-row button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:4px 10px;font-size:.8rem;font-weight:700;cursor:pointer}
+  .log-row button.fav-btn{border-color:#e0a800;color:#c69000}
+
+  /* トースト */
+  #toast{
+    position:fixed;top:14px;left:50%;transform:translateX(-50%);
+    background:var(--text);color:#fff;font-size:.85rem;padding:8px 18px;border-radius:99px;
+    opacity:0;pointer-events:none;transition:opacity .25s;z-index:10;white-space:nowrap;
+  }
+  #toast.show{opacity:.95}
+
+  footer{
+    font-size:.72rem;color:var(--muted);padding:10px 4px 20px;
+  }
+  .empty{font-size:.85rem;color:var(--muted);padding:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧂 減塩外食ナビ</h1>
+  <p>お店を選ぶと、塩分目標内におさまるメニューの組み合わせを提案します</p>
+</header>
+
+<main>
+  <section>
+    <h2>1食の塩分目標</h2>
+    <p class="hint">1日6g目標なら1食あたり約2.0g、控えめ習慣なら2.5gが目安です</p>
+    <div class="chips" id="budget-chips">
+      <button class="chip" data-v="2.0">2.0g</button>
+      <button class="chip active" data-v="2.5">2.5g</button>
+      <button class="chip" data-v="3.0">3.0g</button>
+      <input type="number" id="budget-input" step="0.1" min="0.5" max="10" placeholder="自由入力">
+    </div>
+  </section>
+
+  <section>
+    <h2>今日の記録</h2>
+    <p class="hint">食べたものを記録すると、1日の残り塩分が分かります(この端末のブラウザに保存されます)</p>
+    <div class="day-card" id="day-card"></div>
+  </section>
+
+  <section id="fav-section" style="display:none">
+    <h2>お気に入り</h2>
+    <p class="hint">よく頼む組み合わせをワンタップで呼び出せます</p>
+    <div id="fav-list"></div>
+  </section>
+
+  <section>
+    <h2>お店を選ぶ</h2>
+    <div class="stores" id="stores"></div>
+    <div class="tip" id="store-tip"></div>
+  </section>
+
+  <section>
+    <h2>おすすめ組み合わせ</h2>
+    <p class="hint">「みそ汁を残す」「つゆを残す」で収まる案は緑ラベル、目標+0.3g以内の案は「許容範囲」としてオレンジで表示します</p>
+    <div id="combos"></div>
+  </section>
+
+  <section>
+    <h2>自分で組み合わせる</h2>
+    <p class="hint">チェックすると下のバーに合計塩分が表示されます。定食・麺類は「残す」オプションで再計算できます</p>
+    <div id="menu-list"></div>
+  </section>
+
+  <footer>
+    ※ 食塩相当量・カロリーは各社公表の栄養成分情報をもとにした<strong>参考値(目安)</strong>です。
+    メニュー改定で変わるため、正確な値は各社公式サイトでご確認ください。
+    腎臓疾患などで塩分制限の指示を受けている方は医師・管理栄養士の指導を優先してください。
+  </footer>
+</main>
+
+<div id="total-bar">
+  <div class="inner">
+    <div class="row">
+      <span id="total-label">選択中: 0品</span>
+      <span><span id="total-salt">0.0</span> g / <span id="total-budget">2.5</span> g <span class="status" id="total-status"></span></span>
+    </div>
+    <div class="meter"><div id="meter-fill" style="width:0%"></div></div>
+    <div class="log-row" id="bar-actions" style="display:none">
+      <span>記録:</span>
+      <button data-bar-slot="朝食">朝</button>
+      <button data-bar-slot="昼食">昼</button>
+      <button data-bar-slot="夕食">夜</button>
+      <button data-bar-slot="間食">間食</button>
+      <button class="fav-btn" id="save-fav">★ お気に入り</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ===== データ(食塩相当量 g / カロリー kcal は各社公表値ベースの目安) =====
+// cat: main=主菜・ごはんもの, side=サイド・副菜, soup=汁物
+// adj: 「残す」ことで減らせる分。salt/kcal はマイナスできる量
+const STORES = [
+  {
+    id:"yoshinoya", name:"吉野家",
+    tip:"牛皿+ごはん(別々)にすると丼より調整しやすい。みそ汁は1杯で約1.5gなので迷ったら省くのが◎",
+    items:[
+      {n:"牛丼(小盛)", cat:"main", salt:2.2, kcal:488},
+      {n:"牛丼(並盛)", cat:"main", salt:2.7, kcal:635},
+      {n:"牛皿(並盛)", cat:"main", salt:1.9, kcal:293, note:"ごはんと組み合わせて"},
+      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:705, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:22}},
+      {n:"ごはん(並)", cat:"side", salt:0.0, kcal:327},
+      {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:23, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:66},
+      {n:"お新香", cat:"side", salt:0.9, kcal:24},
+      {n:"みそ汁", cat:"soup", salt:1.5, kcal:22},
+    ]
+  },
+  {
+    id:"sukiya", name:"すき家",
+    tip:"サラダ・おんたまは塩分ほぼゼロの優秀サイド。とん汁は具だくさんだが塩分約2.2gと高め",
+    items:[
+      {n:"牛丼(ミニ)", cat:"main", salt:1.9, kcal:496},
+      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:733},
+      {n:"とりそぼろ丼", cat:"main", salt:2.2, kcal:640},
+      {n:"サラダ", cat:"side", salt:0.1, kcal:26, note:"ドレッシングで+0.5〜1g"},
+      {n:"おんたま", cat:"side", salt:0.1, kcal:84},
+      {n:"お新香", cat:"side", salt:1.0, kcal:15},
+      {n:"みそ汁", cat:"soup", salt:1.6, kcal:26},
+      {n:"とん汁", cat:"soup", salt:2.2, kcal:174},
+    ]
+  },
+  {
+    id:"matsuya", name:"松屋",
+    tip:"定食に付くみそ汁は約1.6g。「みそ汁を残す」だけで焼肉定食も目標圏内に入ってくる",
+    items:[
+      {n:"牛めし(並盛)", cat:"main", salt:2.6, kcal:692},
+      {n:"牛めし(ミニ)", cat:"main", salt:2.0, kcal:496},
+      {n:"牛焼肉定食", cat:"main", salt:4.2, kcal:730, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.6, kcal:24}},
+      {n:"カルビ焼肉定食", cat:"main", salt:4.6, kcal:830, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.6, kcal:24}},
+      {n:"生野菜", cat:"side", salt:0.0, kcal:26, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:66},
+      {n:"みそ汁", cat:"soup", salt:1.6, kcal:24},
+      {n:"豚汁", cat:"soup", salt:2.3, kcal:170},
+    ]
+  },
+  {
+    id:"yayoiken", name:"やよい軒",
+    tip:"ごはんおかわり自由(塩分ゼロ)。おかずの塩分が中心なので、みそ汁を残すと−1.4gの効果大",
+    items:[
+      {n:"しょうが焼定食", cat:"main", salt:4.1, kcal:672, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
+      {n:"サバの塩焼定食", cat:"main", salt:4.4, kcal:625, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
+      {n:"肉野菜炒め定食", cat:"main", salt:4.6, kcal:706, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
+      {n:"冷奴", cat:"side", salt:0.3, kcal:60, note:"醤油少なめで"},
+      {n:"ほうれん草のお浸し", cat:"side", salt:0.5, kcal:20},
+    ]
+  },
+  {
+    id:"ootoya", name:"大戸屋",
+    tip:"干物・漬け魚の定食は塩分高め。鶏系の定食+みそ汁を残す構成が減塩向き",
+    items:[
+      {n:"鶏と野菜の黒酢あん定食", cat:"main", salt:4.9, kcal:900, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
+      {n:"炭火焼き塩麹チキン定食", cat:"main", salt:3.6, kcal:640, note:"みそ汁込みの目安",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
+      {n:"しまほっけの炭火焼き定食", cat:"main", salt:5.8, kcal:660, note:"干物は塩分高め・みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
+      {n:"ばくだん小鉢", cat:"side", salt:0.9, kcal:100},
+      {n:"五穀ご飯(普通盛)", cat:"side", salt:0.0, kcal:270},
+    ]
+  },
+  {
+    id:"gusto", name:"ガスト",
+    tip:"ソースは「少なめ・別添え」で頼めると大幅減塩。ライスは塩分ゼロなので組み合わせの軸に",
+    items:[
+      {n:"ハンバーグステーキ", cat:"main", salt:2.5, kcal:560},
+      {n:"チーズINハンバーグ", cat:"main", salt:2.9, kcal:685},
+      {n:"若鶏のグリル(大葉おろし)", cat:"main", salt:2.8, kcal:540},
+      {n:"ライス", cat:"side", salt:0.0, kcal:302},
+      {n:"彩り野菜サラダ", cat:"side", salt:0.6, kcal:90, note:"ドレッシング含む目安"},
+      {n:"ほうれん草ソテー", cat:"side", salt:0.9, kcal:100},
+      {n:"コーンスープ", cat:"soup", salt:1.3, kcal:150},
+    ]
+  },
+  {
+    id:"saizeriya", name:"サイゼリヤ",
+    tip:"パスタは麺自体の塩分が控えめなペペロンチーノ系が有利。粉チーズのかけすぎに注意",
+    items:[
+      {n:"ミラノ風ドリア", cat:"main", salt:2.2, kcal:520},
+      {n:"ハンバーグステーキ", cat:"main", salt:2.4, kcal:480},
+      {n:"アーリオ・オーリオ(ペペロンチーノ)", cat:"main", salt:1.5, kcal:550},
+      {n:"ライス", cat:"side", salt:0.0, kcal:250},
+      {n:"小エビのサラダ", cat:"side", salt:1.1, kcal:125},
+      {n:"辛味チキン", cat:"side", salt:1.3, kcal:370},
+      {n:"ミネストローネ", cat:"soup", salt:1.2, kcal:110},
+    ]
+  },
+  {
+    id:"marugame", name:"丸亀製麺",
+    tip:"うどんは「つゆを残す」が最大の減塩。天ぷらは塩・つゆをつけなければ意外と低塩分",
+    items:[
+      {n:"かけうどん(並)", cat:"main", salt:4.0, kcal:300, note:"つゆ込みの目安",
+        adj:{label:"つゆを残す", salt:2.4, kcal:10}},
+      {n:"ぶっかけうどん(並・冷)", cat:"main", salt:2.6, kcal:330},
+      {n:"釜揚げうどん(並)", cat:"main", salt:2.1, kcal:300, note:"つけつゆ全量の目安",
+        adj:{label:"つけつゆ半分", salt:0.8, kcal:5}},
+      {n:"かしわ天", cat:"side", salt:0.6, kcal:160},
+      {n:"野菜かき揚げ", cat:"side", salt:0.7, kcal:500, note:"カロリー高め"},
+      {n:"いなり", cat:"side", salt:0.9, kcal:130},
+    ]
+  },
+  {
+    id:"ringerhut", name:"リンガーハット",
+    tip:"ちゃんぽんはスープを残すと約−3g。皿うどんはあんに塩分が溶けているので残しにくい",
+    items:[
+      {n:"長崎ちゃんぽん", cat:"main", salt:5.6, kcal:665, note:"スープ込みの目安",
+        adj:{label:"スープを残す", salt:2.9, kcal:80}},
+      {n:"野菜たっぷりちゃんぽん", cat:"main", salt:6.7, kcal:750, note:"スープ込みの目安",
+        adj:{label:"スープを残す", salt:3.4, kcal:90}},
+      {n:"長崎皿うどん", cat:"main", salt:3.9, kcal:700, note:"ソース・酢で+0.5g"},
+      {n:"ぎょうざ(5個)", cat:"side", salt:1.3, kcal:250, note:"タレなしで約−0.4g"},
+    ]
+  },
+  {
+    id:"mcdonalds", name:"マクドナルド",
+    tip:"ポテトは「塩抜き」で注文可能。単品バーガー+サイドサラダが減塩の定番パターン",
+    items:[
+      {n:"ハンバーガー", cat:"main", salt:1.4, kcal:256},
+      {n:"チーズバーガー", cat:"main", salt:1.9, kcal:307},
+      {n:"てりやきマックバーガー", cat:"main", salt:2.1, kcal:478},
+      {n:"ビッグマック", cat:"main", salt:2.6, kcal:530},
+      {n:"マックフライポテト(M)", cat:"side", salt:0.6, kcal:410, note:"塩抜き注文で約0.1g"},
+      {n:"チキンマックナゲット(5ピース)", cat:"side", salt:0.9, kcal:263, note:"ソースで+0.3〜0.5g"},
+      {n:"サイドサラダ", cat:"side", salt:0.0, kcal:15, note:"ドレッシングで+0.5〜1g"},
+    ]
+  },
+  {
+    id:"mos", name:"モスバーガー",
+    tip:"ソース系バーガーでも塩分2g台前半。ポテトSやサラダを足しても目標内に収めやすい",
+    items:[
+      {n:"モスバーガー", cat:"main", salt:2.1, kcal:367},
+      {n:"テリヤキバーガー", cat:"main", salt:2.2, kcal:378},
+      {n:"モスチーズバーガー", cat:"main", salt:2.5, kcal:413},
+      {n:"フレンチフライポテト(S)", cat:"side", salt:0.5, kcal:213},
+      {n:"グリーンサラダ", cat:"side", salt:0.1, kcal:19, note:"ドレッシングで+0.8g"},
+    ]
+  },
+  {
+    id:"kfc", name:"ケンタッキー",
+    tip:"オリジナルチキンは1ピース約1.7g。2ピース食べるなら他をほぼゼロに抑えるのがコツ",
+    items:[
+      {n:"オリジナルチキン(1ピース)", cat:"main", salt:1.7, kcal:237},
+      {n:"和風チキンカツバーガー", cat:"main", salt:2.4, kcal:478},
+      {n:"カーネルクリスピー", cat:"side", salt:1.1, kcal:130},
+      {n:"ポテト(S)", cat:"side", salt:0.4, kcal:195},
+      {n:"コールスロー(S)", cat:"side", salt:0.4, kcal:92},
+    ]
+  },
+];
+
+const CAT_LABEL = { main:"主菜・ごはんもの", side:"サイド・副菜", soup:"汁物" };
+
+let state = {
+  storeId: STORES[0].id,
+  budget: 2.5,
+  selected: new Set(),   // チェック中のメニュー
+  adjusted: new Set(),   // 「残す」オプションON のメニュー
+};
+
+const $ = (id) => document.getElementById(id);
+const fmt = (v) => (Math.round(v*10)/10).toFixed(1);
+const sumSalt = (c) => c.reduce((s,i)=>s+i.salt,0);
+const sumKcal = (c) => c.reduce((s,i)=>s+i.kcal,0);
+const store = () => STORES.find(s=>s.id===state.storeId);
+const round1 = (v) => Math.round(v*10)/10;
+
+// ===== ブラウザ保存(localStorage) =====
+const LS_LOG = "genen.log.v1", LS_FAVS = "genen.favs.v1", LS_TARGET = "genen.dayTarget.v1";
+function lsLoad(key, def){ try{ const v = JSON.parse(localStorage.getItem(key)); return v ?? def; }catch(e){ return def; } }
+function lsSave(key, v){ localStorage.setItem(key, JSON.stringify(v)); }
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+let dayTarget = lsLoad(LS_TARGET, 6.0);
+let dayLog = lsLoad(LS_LOG, {});
+let favs = lsLoad(LS_FAVS, []);
+const todayEntries = () => dayLog[todayKey()] || [];
+
+let toastTimer;
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+function recordMeal(slot, items, storeName){
+  if (!items.length){ toast("メニューが選ばれていません"); return; }
+  const entry = {
+    slot, store: storeName,
+    names: items.map(i=>i.adjApplied ? `${i.n}(${i.adjApplied})` : i.n),
+    salt: round1(sumSalt(items)), kcal: sumKcal(items),
+  };
+  const k = todayKey();
+  (dayLog[k] = dayLog[k] || []).push(entry);
+  lsSave(LS_LOG, dayLog);
+  renderDay();
+  toast(`${slot}に記録しました(塩分 ${fmt(entry.salt)} g)`);
+}
+
+// ===== おすすめ組み合わせの計算 =====
+// adj付きメニューは「そのまま」と「残した場合」の2パターンに展開して探索する
+function expandVariants(items){
+  const out = [];
+  items.forEach((it, idx) => {
+    out.push({...it, base:idx, adjApplied:null});
+    if (it.adj){
+      out.push({
+        ...it, base:idx,
+        salt: Math.max(0, Math.round((it.salt - it.adj.salt)*10)/10),
+        kcal: it.kcal - (it.adj.kcal || 0),
+        adjApplied: it.adj.label,
+      });
+    }
+  });
+  return out;
+}
+
+function comboScore(c){
+  const kcal = sumKcal(c), salt = sumSalt(c);
+  let score = 0;
+  // 食事として成立するカロリー帯(500〜800kcal)を高評価
+  if (kcal >= 500 && kcal <= 800) score += 3;
+  else score += Math.max(0, 3 - Math.abs(kcal - 650) / 150);
+  // 品目のバリエーション
+  score += new Set(c.map(i=>i.cat)).size * 0.5;
+  // 同じ満足度なら塩分が低いほうを上位に
+  score -= salt * 0.4;
+  // 「残す」の手間ぶんはわずかに減点
+  score -= c.filter(i=>i.adjApplied).length * 0.25;
+  return score;
+}
+
+const TOLERANCE = 0.3; // 目標を少し超えても「許容範囲」として提案する幅(g)
+const EPS = 0.01;      // 小数の丸め誤差ぶんの余裕
+
+function buildCombos(items, budget){
+  const variants = expandVariants(items);
+  const mains = variants.filter(i=>i.cat==="main");
+  const subs  = variants.filter(i=>i.cat!=="main");
+  const limit = budget + TOLERANCE + EPS;
+  const all = [];
+  // 同じ主菜(base単位)からは上位3案まで(提案に変化をつける)
+  const mainBases = [...new Set(mains.map(m=>m.base))];
+  for (const base of mainBases){
+    const perMain = [];
+    for (const m of mains.filter(v=>v.base===base)){
+      if (m.salt <= limit) perMain.push([m]);
+      for (let i=0;i<subs.length;i++){
+        const c1 = [m, subs[i]];
+        if (sumSalt(c1) <= limit) perMain.push(c1);
+        for (let j=i+1;j<subs.length;j++){
+          if (subs[i].base === subs[j].base) continue; // 同一メニューの別パターン同士は不可
+          const c2 = [m, subs[i], subs[j]];
+          if (sumSalt(c2) <= limit) perMain.push(c2);
+        }
+      }
+    }
+    perMain.sort((a,b)=>comboScore(b)-comboScore(a));
+    all.push(...perMain.slice(0,3));
+  }
+  // 目標内を優先し、わずかにオーバーする「許容範囲」案を後ろに足す
+  // 同じ主菜に提案が偏らないよう、主菜ごとの採用数を制限する
+  const within = all.filter(c=>sumSalt(c) <= budget + EPS).sort((a,b)=>comboScore(b)-comboScore(a));
+  const near   = all.filter(c=>sumSalt(c) >  budget + EPS).sort((a,b)=>comboScore(b)-comboScore(a));
+  const counts = {};
+  const pickDiverse = (list, max, perMainCap) => {
+    const out = [];
+    for (const c of list){
+      const b = c[0].base; // 組み合わせの先頭は必ず主菜
+      if ((counts[b]||0) >= perMainCap) continue;
+      counts[b] = (counts[b]||0) + 1;
+      out.push(c);
+      if (out.length >= max) break;
+    }
+    return out;
+  };
+  const res = pickDiverse(within, near.length ? 4 : 6, 2);
+  res.push(...pickDiverse(near, 6 - res.length, 1));
+  return res;
+}
+
+// ===== 描画 =====
+function renderStores(){
+  $("stores").innerHTML = STORES.map(s =>
+    `<button class="store-btn${s.id===state.storeId?" active":""}" data-id="${s.id}">${s.name}</button>`
+  ).join("");
+  $("store-tip").innerHTML = "💡 " + store().tip;
+}
+
+let lastCombos = [];
+function renderCombos(){
+  const combos = buildCombos(store().items, state.budget);
+  lastCombos = combos;
+  if (!combos.length){
+    $("combos").innerHTML = `<p class="empty">この目標値(${fmt(state.budget)}g)内に収まる組み合わせが見つかりません。目標を少し上げるか、単品の塩分が低いお店をお試しください。</p>`;
+    return;
+  }
+  $("combos").innerHTML = combos.map((c,idx)=>{
+    const salt = sumSalt(c);
+    const isNear = salt > state.budget + EPS;
+    const rank = isNear
+      ? `⚠️ 許容範囲(目標+${fmt(salt - state.budget)}g)`
+      : `おすすめ ${idx+1}`;
+    return `
+    <div class="combo${isNear?" near":""}">
+      <div class="combo-head">
+        <span class="combo-rank">${rank}</span>
+        <span class="combo-total">塩分 ${fmt(salt)} g<small>${sumKcal(c)} kcal</small></span>
+      </div>
+      <ul>
+        ${c.map(i=>`<li><span>${i.n}${i.adjApplied?`<span class="badge adj">${i.adjApplied}</span>`:""}${i.note&&!i.adjApplied?`<span class="badge">${i.note}</span>`:""}</span><span class="g">${fmt(i.salt)} g</span></li>`).join("")}
+      </ul>
+      <div class="log-row"><span>記録:</span>
+        <button data-log="${idx}" data-slot="朝食">朝</button>
+        <button data-log="${idx}" data-slot="昼食">昼</button>
+        <button data-log="${idx}" data-slot="夕食">夜</button>
+        <button data-log="${idx}" data-slot="間食">間食</button>
+      </div>
+    </div>
+  `;}).join("");
+}
+
+function renderMenuList(){
+  const groups = ["main","side","soup"];
+  $("menu-list").innerHTML = groups.map(cat=>{
+    const items = store().items.filter(i=>i.cat===cat);
+    if (!items.length) return "";
+    return `<div class="cat-title">${CAT_LABEL[cat]}</div>` + items.map(i=>{
+      const key = state.storeId + "::" + i.n;
+      const checked = state.selected.has(key);
+      let html = `<label class="item">
+        <input type="checkbox" data-key="${key}" ${checked?"checked":""}>
+        <span class="name">${i.n}${i.note?`<span class="note">${i.note}</span>`:""}</span>
+        <span class="nums">${fmt(i.salt)} g<small>${i.kcal} kcal</small></span>
+      </label>`;
+      if (i.adj && checked){
+        html += `<label class="item adj-row">
+          <input type="checkbox" data-adjkey="${key}" ${state.adjusted.has(key)?"checked":""}>
+          <span class="name">${i.adj.label}</span>
+          <span class="nums">−${fmt(i.adj.salt)} g</span>
+        </label>`;
+      }
+      return html;
+    }).join("");
+  }).join("");
+}
+
+function selectedItems(){
+  return store().items
+    .filter(i=>state.selected.has(state.storeId+"::"+i.n))
+    .map(i=>{
+      const key = state.storeId+"::"+i.n;
+      if (i.adj && state.adjusted.has(key)){
+        return {...i, salt:Math.max(0, round1(i.salt-i.adj.salt)), kcal:i.kcal-(i.adj.kcal||0), adjApplied:i.adj.label};
+      }
+      return i;
+    });
+}
+
+function renderTotal(){
+  const items = selectedItems();
+  const salt = sumSalt(items);
+  $("total-label").textContent = `選択中: ${items.length}品` + (items.length?` / ${sumKcal(items)} kcal`:"");
+  $("total-salt").textContent = fmt(salt);
+  $("total-budget").textContent = fmt(state.budget);
+  const ratio = Math.min(1, salt/state.budget);
+  const fill = $("meter-fill");
+  fill.style.width = (ratio*100)+"%";
+  const status = $("total-status");
+  if (salt === 0){ status.textContent = ""; fill.style.background = "var(--accent)"; }
+  else if (salt <= state.budget){ status.textContent = "✅ 目標内"; status.style.color="var(--accent)"; fill.style.background="var(--accent)"; }
+  else if (salt <= state.budget*1.2){ status.textContent = "⚠️ ややオーバー"; status.style.color="var(--warn)"; fill.style.background="var(--warn)"; }
+  else { status.textContent = "🚫 オーバー"; status.style.color="var(--over)"; fill.style.background="var(--over)"; }
+  $("bar-actions").style.display = items.length ? "" : "none";
+}
+
+function renderDay(){
+  const entries = todayEntries();
+  const total = round1(entries.reduce((s,e)=>s+e.salt,0));
+  const remain = round1(dayTarget - total);
+  const over = remain < 0;
+  const rows = entries.length ? entries.map((e,i)=>`
+    <div class="entry">
+      <span class="slot">${e.slot}</span>
+      <span class="desc">${e.names.join(" + ")}<small>${e.store} / ${e.kcal} kcal</small></span>
+      <span class="g">${fmt(e.salt)} g</span>
+      <button class="del" data-del="${i}" title="この記録を削除">✕</button>
+    </div>`).join("")
+    : `<div class="empty-day">まだ記録がありません。おすすめカードや下のバーの「朝・昼・夜」ボタンで記録できます</div>`;
+  const ratio = Math.min(1, dayTarget > 0 ? total/dayTarget : 1);
+  $("day-card").innerHTML = `
+    <div class="day-nums">
+      <span>1日の目標 <input type="number" id="day-target" step="0.5" min="1" max="15" value="${dayTarget}"> g</span>
+      <span>合計 ${fmt(total)} g / <span class="day-remain${over?" over":""}">${over ? `${fmt(-remain)} g オーバー` : `残り ${fmt(remain)} g`}</span></span>
+    </div>
+    <div class="meter"><div style="width:${ratio*100}%;background:${over?"var(--over)":"var(--accent)"}"></div></div>
+    ${rows}
+    ${(!over && remain >= 0.5 && entries.length) ? `<button class="use-remaining" id="use-remaining">残り ${fmt(remain)} g を1食の目標にして提案を見る</button>` : ""}
+  `;
+}
+
+function renderFavs(){
+  const sec = $("fav-section");
+  if (!favs.length){ sec.style.display = "none"; return; }
+  sec.style.display = "";
+  $("fav-list").innerHTML = favs.map((f,i)=>`
+    <div class="fav">
+      <span class="desc">${f.label}<small>${f.storeName} / 塩分 ${fmt(f.salt)} g / ${f.kcal} kcal</small></span>
+      <button data-fav-load="${i}">呼び出す</button>
+      <button class="del" data-fav-del="${i}" title="お気に入りから削除">✕</button>
+    </div>`).join("");
+}
+
+function renderAll(){
+  renderStores(); renderCombos(); renderMenuList(); renderTotal(); renderDay(); renderFavs();
+}
+
+// ===== イベント =====
+$("stores").addEventListener("click", e=>{
+  const btn = e.target.closest(".store-btn");
+  if (!btn) return;
+  state.storeId = btn.dataset.id;
+  state.selected.clear();
+  state.adjusted.clear();
+  renderAll();
+});
+
+$("budget-chips").addEventListener("click", e=>{
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  state.budget = parseFloat(chip.dataset.v);
+  $("budget-input").value = "";
+  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", c===chip));
+  renderCombos(); renderTotal();
+});
+
+$("budget-input").addEventListener("input", e=>{
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v) && v >= 0.5){
+    state.budget = v;
+    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+    renderCombos(); renderTotal();
+  }
+});
+
+$("menu-list").addEventListener("change", e=>{
+  const cb = e.target;
+  if (cb.dataset.adjkey){
+    if (cb.checked) state.adjusted.add(cb.dataset.adjkey);
+    else state.adjusted.delete(cb.dataset.adjkey);
+    renderTotal();
+    return;
+  }
+  if (cb.dataset.key){
+    if (cb.checked) state.selected.add(cb.dataset.key);
+    else { state.selected.delete(cb.dataset.key); state.adjusted.delete(cb.dataset.key); }
+    renderMenuList(); renderTotal();
+  }
+});
+
+// おすすめカードの記録ボタン
+$("combos").addEventListener("click", e=>{
+  const b = e.target.closest("button[data-log]");
+  if (!b) return;
+  recordMeal(b.dataset.slot, lastCombos[+b.dataset.log], store().name);
+});
+
+// 合計バーの記録・お気に入りボタン
+$("total-bar").addEventListener("click", e=>{
+  const slotBtn = e.target.closest("button[data-bar-slot]");
+  if (slotBtn){ recordMeal(slotBtn.dataset.barSlot, selectedItems(), store().name); return; }
+  if (e.target.id === "save-fav"){
+    const items = selectedItems();
+    if (!items.length){ toast("メニューが選ばれていません"); return; }
+    favs.push({
+      storeId: state.storeId,
+      storeName: store().name,
+      names: [...state.selected].map(k=>k.split("::")[1]),
+      adjusted: [...state.adjusted].map(k=>k.split("::")[1]),
+      label: items.map(i=>i.adjApplied ? `${i.n}(${i.adjApplied})` : i.n).join(" + "),
+      salt: round1(sumSalt(items)), kcal: sumKcal(items),
+    });
+    lsSave(LS_FAVS, favs);
+    renderFavs();
+    toast("お気に入りに保存しました");
+  }
+});
+
+// 今日の記録カード: 削除・残り目標セット・1日目標の変更
+$("day-card").addEventListener("click", e=>{
+  if (e.target.dataset.del !== undefined){
+    const k = todayKey();
+    (dayLog[k]||[]).splice(+e.target.dataset.del, 1);
+    lsSave(LS_LOG, dayLog);
+    renderDay();
+    return;
+  }
+  if (e.target.id === "use-remaining"){
+    const remain = round1(dayTarget - todayEntries().reduce((s,x)=>s+x.salt,0));
+    state.budget = Math.max(0.5, remain);
+    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+    $("budget-input").value = state.budget;
+    renderCombos(); renderTotal();
+    toast(`1食の目標を ${fmt(state.budget)} g にしました`);
+    $("combos").scrollIntoView({behavior:"smooth"});
+  }
+});
+$("day-card").addEventListener("change", e=>{
+  if (e.target.id === "day-target"){
+    const v = parseFloat(e.target.value);
+    if (!isNaN(v) && v > 0){ dayTarget = v; lsSave(LS_TARGET, dayTarget); renderDay(); }
+  }
+});
+
+// お気に入り: 呼び出し・削除
+$("fav-list").addEventListener("click", e=>{
+  const load = e.target.closest("button[data-fav-load]");
+  if (load){
+    const f = favs[+load.dataset.favLoad];
+    if (!STORES.some(s=>s.id===f.storeId)){ toast("このお店のデータが見つかりません"); return; }
+    state.storeId = f.storeId;
+    state.selected = new Set(f.names.map(n=>f.storeId+"::"+n));
+    state.adjusted = new Set(f.adjusted.map(n=>f.storeId+"::"+n));
+    renderAll();
+    toast(`「${f.storeName}」の組み合わせを呼び出しました`);
+    $("menu-list").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  const del = e.target.closest("button[data-fav-del]");
+  if (del){ favs.splice(+del.dataset.favDel, 1); lsSave(LS_FAVS, favs); renderFavs(); }
+});
+
+renderAll();
+
+// PWA: オフライン対応のサービスワーカーを登録(未対応環境では何もしない)
+if ("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
