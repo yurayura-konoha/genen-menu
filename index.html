@@ -254,7 +254,8 @@ const STORES = [
       {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474},
       {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633},
       {n:"牛皿(並盛)", cat:"main", salt:1.8, kcal:281, note:"ごはんと組み合わせて"},
-      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, note:"みそ汁込み",
+      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, note:"ごはん・みそ汁込み",
+        incl:["ごはん(並)","みそ汁"],
         adj:{label:"みそ汁を残す", salt:1.3, kcal:20}},
       {n:"ごはん(並)", cat:"side", salt:0.0, kcal:343},
       {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:16, note:"ドレッシングで+0.5〜1g"},
@@ -285,12 +286,16 @@ const STORES = [
     tip:"主要メニューはみそ汁付きで数値も込み。「みそ汁を残す」だけで−1.5gできる",
     items:[
       {n:"牛めし(並盛)", cat:"main", salt:3.0, kcal:687, note:"みそ汁込み",
+        incl:["みそ汁"],
         adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
       {n:"牛めし(小盛)", cat:"main", salt:2.6, kcal:507, note:"みそ汁込み",
+        incl:["みそ汁"],
         adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"牛焼肉定食", cat:"main", salt:2.3, kcal:806, note:"みそ汁込み",
+      {n:"牛焼肉定食", cat:"main", salt:2.3, kcal:806, note:"ライス・みそ汁・生野菜込み",
+        incl:["みそ汁","生野菜"],
         adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"カルビ焼肉定食", cat:"main", salt:3.2, kcal:918, note:"みそ汁込み",
+      {n:"カルビ焼肉定食", cat:"main", salt:3.2, kcal:918, note:"ライス・みそ汁・生野菜込み",
+        incl:["みそ汁","生野菜"],
         adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
       {n:"生野菜", cat:"side", salt:0.1, kcal:24, note:"ドレッシングで+0.5〜1g"},
       {n:"半熟玉子", cat:"side", salt:0.2, kcal:71},
@@ -514,13 +519,15 @@ function buildCombos(items, budget){
   for (const base of mainBases){
     const perMain = [];
     for (const m of mains.filter(v=>v.base===base)){
+      // 定食に最初から付いているもの(incl)は重ねて提案しない
+      const usable = subs.filter(s => !(m.incl||[]).includes(s.n));
       if (m.salt <= limit) perMain.push([m]);
-      for (let i=0;i<subs.length;i++){
-        const c1 = [m, subs[i]];
+      for (let i=0;i<usable.length;i++){
+        const c1 = [m, usable[i]];
         if (sumSalt(c1) <= limit) perMain.push(c1);
-        for (let j=i+1;j<subs.length;j++){
-          if (subs[i].base === subs[j].base) continue; // 同一メニューの別パターン同士は不可
-          const c2 = [m, subs[i], subs[j]];
+        for (let j=i+1;j<usable.length;j++){
+          if (usable[i].base === usable[j].base) continue; // 同一メニューの別パターン同士は不可
+          const c2 = [m, usable[i], usable[j]];
           if (sumSalt(c2) <= limit) perMain.push(c2);
         }
       }
@@ -546,6 +553,10 @@ function buildCombos(items, budget){
   };
   const res = pickDiverse(within, near.length ? 4 : 6, 2);
   res.push(...pickDiverse(near, 6 - res.length, 1));
+  // 許容範囲枠が埋まらなかったぶんは目標内の案で埋め戻す
+  if (res.length < 6){
+    res.push(...pickDiverse(within.filter(c=>!res.includes(c)), 6 - res.length, 2));
+  }
   return res;
 }
 
