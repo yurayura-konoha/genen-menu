@@ -88,6 +88,8 @@
   .badge.adj{
     background:var(--accent);color:#fff;font-weight:700;
   }
+  .badge.fatwarn{background:#fdeedd;color:var(--warn);font-weight:700}
+  .badge.good{background:var(--accent-light);color:#0b6b62;font-weight:700}
   .combo.near{border-left:4px solid var(--warn)}
   .combo.near .combo-rank{color:var(--warn)}
   .combo.near .combo-total{color:var(--warn)}
@@ -215,9 +217,11 @@
   </section>
 
   <footer>
-    ※ 吉野家(2026/6/18版)・すき家(2026/7/3版)・松屋(2026/2/24版)は各社公式の栄養成分公表値に基づきます。
-    その他の店舗は<strong>参考値(目安)</strong>のため、正確な値は各社公式サイトでご確認ください。
-    いずれもメニュー改定で変わることがあります。
+    ※ 吉野家・すき家・松屋・やよい軒・大戸屋・リンガーハット・マクドナルド・モスバーガー・ケンタッキーは
+    各社公式の栄養成分公表値に基づきます(取得時期は店舗選択時に表示)。
+    ガスト・サイゼリヤ・丸亀製麺は<strong>参考値(目安)</strong>のため、正確な値は各社公式サイトでご確認ください。
+    いずれもメニュー改定で変わることがあります。「残す」オプションの減塩幅は一部推定を含みます。
+    脂質の適正判定は脂質エネルギー比(20〜30%が目安、35%超で「脂質多め」)に基づく参考情報です。
     腎臓疾患などで塩分制限の指示を受けている方は医師・管理栄養士の指導を優先してください。
   </footer>
 </main>
@@ -251,18 +255,18 @@ const STORES = [
     dataNote:"公式公表値(2026年6月18日版)より",
     tip:"牛皿+ごはん(別々)にすると丼より調整しやすい。みそ汁は1杯1.3gなので迷ったら省くのが◎",
     items:[
-      {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474},
-      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633},
-      {n:"牛皿(並盛)", cat:"main", salt:1.8, kcal:281, note:"ごはんと組み合わせて"},
-      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, note:"ごはん・みそ汁込み",
+      {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474, fat:19.6},
+      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633, fat:23.6},
+      {n:"牛皿(並盛)", cat:"main", salt:1.8, kcal:281, fat:22.9, note:"ごはんと組み合わせて"},
+      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, fat:23.4, note:"ごはん・みそ汁込み",
         incl:["ごはん(並)","みそ汁"],
-        adj:{label:"みそ汁を残す", salt:1.3, kcal:20}},
-      {n:"ごはん(並)", cat:"side", salt:0.0, kcal:343},
-      {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:16, note:"ドレッシングで+0.5〜1g"},
-      {n:"半熟玉子", cat:"side", salt:0.2, kcal:76},
-      {n:"お新香", cat:"side", salt:0.9, kcal:17},
-      {n:"みそ汁", cat:"soup", salt:1.3, kcal:20},
-      {n:"豚汁", cat:"soup", salt:3.3, kcal:143},
+        adj:{label:"みそ汁を残す", salt:1.3, kcal:20, fat:0.6}},
+      {n:"ごはん(並)", cat:"side", salt:0.0, kcal:343, fat:0.7},
+      {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:16, fat:0.1, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:76, fat:5.2},
+      {n:"お新香", cat:"side", salt:0.9, kcal:17, fat:0.5},
+      {n:"みそ汁", cat:"soup", salt:1.3, kcal:20, fat:0.6},
+      {n:"豚汁", cat:"soup", salt:3.3, kcal:143, fat:7.7},
     ]
   },
   {
@@ -270,14 +274,14 @@ const STORES = [
     dataNote:"公式公表値(2026年7月3日版)より",
     tip:"サラダ・おんたまは塩分ほぼゼロの優秀サイド。みそ汁は1杯2.2gと意外に高いので注意",
     items:[
-      {n:"牛丼(ミニ)", cat:"main", salt:1.7, kcal:464},
-      {n:"牛丼(並盛)", cat:"main", salt:2.4, kcal:695},
-      {n:"旨だしとりそぼろ丼", cat:"main", salt:3.4, kcal:673},
-      {n:"サラダ", cat:"side", salt:0.1, kcal:28, note:"ドレッシングで+0.5〜1g"},
-      {n:"おんたま", cat:"side", salt:0.2, kcal:84},
-      {n:"おしんこ", cat:"side", salt:0.9, kcal:13},
-      {n:"みそ汁", cat:"soup", salt:2.2, kcal:38},
-      {n:"とん汁", cat:"soup", salt:2.8, kcal:114},
+      {n:"牛丼(ミニ)", cat:"main", salt:1.7, kcal:464, fat:16.0},
+      {n:"牛丼(並盛)", cat:"main", salt:2.4, kcal:695, fat:23.4},
+      {n:"旨だしとりそぼろ丼", cat:"main", salt:3.4, kcal:673, fat:14.4},
+      {n:"サラダ", cat:"side", salt:0.1, kcal:28, fat:0.3, note:"ドレッシングで+0.5〜1g"},
+      {n:"おんたま", cat:"side", salt:0.2, kcal:84, fat:5.7},
+      {n:"おしんこ", cat:"side", salt:0.9, kcal:13, fat:0.1},
+      {n:"みそ汁", cat:"soup", salt:2.2, kcal:38, fat:1.4},
+      {n:"とん汁", cat:"soup", salt:2.8, kcal:114, fat:5.6},
     ]
   },
   {
@@ -285,50 +289,61 @@ const STORES = [
     dataNote:"公式公表値(2026年2月24日版)より",
     tip:"主要メニューはみそ汁付きで数値も込み。「みそ汁を残す」だけで−1.5gできる",
     items:[
-      {n:"牛めし(並盛)", cat:"main", salt:3.0, kcal:687, note:"みそ汁込み",
+      {n:"牛めし(並盛)", cat:"main", salt:3.0, kcal:687, fat:28.9, note:"みそ汁込み",
         incl:["みそ汁"],
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"牛めし(小盛)", cat:"main", salt:2.6, kcal:507, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35, fat:1.3}},
+      {n:"牛めし(小盛)", cat:"main", salt:2.6, kcal:507, fat:22.8, note:"みそ汁込み",
         incl:["みそ汁"],
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"牛焼肉定食", cat:"main", salt:2.3, kcal:806, note:"ライス・みそ汁・生野菜込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35, fat:1.3}},
+      {n:"牛焼肉定食", cat:"main", salt:2.3, kcal:806, fat:41.3, note:"ライス・みそ汁・生野菜込み",
         incl:["みそ汁","生野菜"],
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"カルビ焼肉定食", cat:"main", salt:3.2, kcal:918, note:"ライス・みそ汁・生野菜込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35, fat:1.3}},
+      {n:"カルビ焼肉定食", cat:"main", salt:3.2, kcal:918, fat:46.0, note:"ライス・みそ汁・生野菜込み",
         incl:["みそ汁","生野菜"],
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
-      {n:"生野菜", cat:"side", salt:0.1, kcal:24, note:"ドレッシングで+0.5〜1g"},
-      {n:"半熟玉子", cat:"side", salt:0.2, kcal:71},
-      {n:"みそ汁", cat:"soup", salt:1.5, kcal:35},
-      {n:"豚汁", cat:"soup", salt:3.2, kcal:243},
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35, fat:1.3}},
+      {n:"生野菜", cat:"side", salt:0.1, kcal:24, fat:0.2, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:71, fat:4.8},
+      {n:"みそ汁", cat:"soup", salt:1.5, kcal:35, fat:1.3},
+      {n:"豚汁", cat:"soup", salt:3.2, kcal:243, fat:14.9},
     ]
   },
   {
     id:"yayoiken", name:"やよい軒",
-    tip:"ごはんおかわり自由(塩分ゼロ)。おかずの塩分が中心なので、みそ汁を残すと−1.4gの効果大",
+    dataNote:"公式サイト公表値(2026年7月時点)より",
+    tip:"定食はみそ汁込みで塩分4〜5g。「みそ汁を残す」(−1.9g)を前提に選ぶのが現実的。おかわり自由のごはんは塩分ゼロ",
     items:[
-      {n:"しょうが焼定食", cat:"main", salt:4.1, kcal:672, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
-      {n:"サバの塩焼定食", cat:"main", salt:4.4, kcal:625, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
-      {n:"肉野菜炒め定食", cat:"main", salt:4.6, kcal:706, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.4, kcal:23}},
-      {n:"冷奴", cat:"side", salt:0.3, kcal:60, note:"醤油少なめで"},
-      {n:"ほうれん草のお浸し", cat:"side", salt:0.5, kcal:20},
+      {n:"サバの塩焼定食", cat:"main", salt:3.8, kcal:686, fat:35.1, note:"みそ汁込み",
+        incl:["みそ汁"],
+        adj:{label:"みそ汁を残す", salt:1.9, kcal:21, fat:0.7}},
+      {n:"しょうが焼定食", cat:"main", salt:5.0, kcal:717, fat:37.1, note:"みそ汁込み",
+        incl:["みそ汁"],
+        adj:{label:"みそ汁を残す", salt:1.9, kcal:21, fat:0.7}},
+      {n:"肉野菜炒め定食", cat:"main", salt:5.0, kcal:545, fat:18.6, note:"みそ汁込み",
+        incl:["みそ汁"],
+        adj:{label:"みそ汁を残す", salt:1.9, kcal:21, fat:0.7}},
+      {n:"冷奴", cat:"side", salt:0.0, kcal:21, fat:1.3, note:"醤油で+0.3〜0.5g"},
+      {n:"納豆", cat:"side", salt:0.5, kcal:90, fat:4.5, note:"タレ込み"},
+      {n:"みそ汁", cat:"soup", salt:1.9, kcal:21, fat:0.7},
     ]
   },
   {
     id:"ootoya", name:"大戸屋",
-    tip:"干物・漬け魚の定食は塩分高め。鶏系の定食+みそ汁を残す構成が減塩向き",
+    dataNote:"公式公表値(2026年7月時点・店舗により変動)より ※みそ汁を残す減塩幅は推定",
+    tip:"定食は塩分4.8〜5.4gと高めなので「みそ汁を残す」前提で。ばくだん丼(3.2g)が比較的優秀",
     items:[
-      {n:"鶏と野菜の黒酢あん定食", cat:"main", salt:4.9, kcal:900, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
-      {n:"炭火焼き塩麹チキン定食", cat:"main", salt:3.6, kcal:640, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
-      {n:"しまほっけの炭火焼き定食", cat:"main", salt:5.8, kcal:660, note:"干物は塩分高め・みそ汁込み",
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:25}},
-      {n:"ばくだん小鉢", cat:"side", salt:0.9, kcal:100},
-      {n:"五穀ご飯(普通盛)", cat:"side", salt:0.0, kcal:270},
+      {n:"大戸屋ばくだん丼", cat:"main", salt:3.2, kcal:568, fat:12.0, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25, fat:0.5}},
+      {n:"鶏と野菜の黒酢あん", cat:"main", salt:4.8, kcal:952, fat:33.5, note:"定食(ご飯・みそ汁込み)",
+        incl:["五穀ご飯(普通盛)"],
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25, fat:0.5}},
+      {n:"もろみチキンの炭火焼き", cat:"main", salt:5.2, kcal:802, fat:30.9, note:"定食(ご飯・みそ汁込み)",
+        incl:["五穀ご飯(普通盛)"],
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25, fat:0.5}},
+      {n:"しまほっけの炭火焼き", cat:"main", salt:5.4, kcal:612, fat:13.1, note:"定食・干物は塩分高め",
+        incl:["五穀ご飯(普通盛)"],
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:25, fat:0.5}},
+      {n:"ばくだん小鉢", cat:"side", salt:1.0, kcal:191, fat:9.2},
+      {n:"五穀ご飯(普通盛)", cat:"side", salt:0.0, kcal:283, fat:1.5},
     ]
   },
   {
@@ -373,49 +388,64 @@ const STORES = [
   },
   {
     id:"ringerhut", name:"リンガーハット",
-    tip:"ちゃんぽんはスープを残すと約−3g。皿うどんはあんに塩分が溶けているので残しにくい",
+    dataNote:"公式公表値(2025年10月28日版)より ※スープ残しの減塩幅は推定",
+    tip:"公式の減塩ちゃんぽん・減塩皿うどんが第一候補。通常の麺類は塩分7g超なのでスープを残すのが必須級",
     items:[
-      {n:"長崎ちゃんぽん", cat:"main", salt:5.6, kcal:665, note:"スープ込みの目安",
-        adj:{label:"スープを残す", salt:2.9, kcal:80}},
-      {n:"野菜たっぷりちゃんぽん", cat:"main", salt:6.7, kcal:750, note:"スープ込みの目安",
-        adj:{label:"スープを残す", salt:3.4, kcal:90}},
-      {n:"長崎皿うどん", cat:"main", salt:3.9, kcal:700, note:"ソース・酢で+0.5g"},
-      {n:"ぎょうざ(5個)", cat:"side", salt:1.3, kcal:250, note:"タレなしで約−0.4g"},
+      {n:"減塩ちゃんぽん", cat:"main", salt:4.6, kcal:589, fat:22.8, note:"公式の減塩メニュー",
+        adj:{label:"スープを残す", salt:2.3, kcal:60}},
+      {n:"減塩皿うどん", cat:"main", salt:4.5, kcal:527, fat:27.8, note:"公式の減塩メニュー"},
+      {n:"スモールちゃんぽん", cat:"main", salt:4.6, kcal:315, fat:13.0,
+        adj:{label:"スープを残す", salt:2.3, kcal:60}},
+      {n:"長崎ちゃんぽん", cat:"main", salt:7.4, kcal:611, fat:24.7, note:"スープ込み",
+        adj:{label:"スープを残す", salt:3.7, kcal:80}},
+      {n:"野菜たっぷりちゃんぽん", cat:"main", salt:9.3, kcal:759, fat:35.7, note:"スープ込み",
+        adj:{label:"スープを残す", salt:4.7, kcal:90}},
+      {n:"長崎皿うどん", cat:"main", salt:7.5, kcal:728, fat:37.3, note:"ソース・酢で+0.5g"},
+      {n:"ぎょうざ(5個)", cat:"side", salt:0.7, kcal:199, fat:14.1, note:"タレ(10g)で+1.0g"},
     ]
   },
   {
     id:"mcdonalds", name:"マクドナルド",
-    tip:"ポテトは「塩抜き」で注文可能。単品バーガー+サイドサラダが減塩の定番パターン",
+    dataNote:"公式サイト公表値(2026年7月時点)より",
+    tip:"ポテトは「塩抜き」で注文可能。フィレオフィッシュ(1.6g)+サイドサラダ(0g)は優秀な組み合わせ",
     items:[
-      {n:"ハンバーガー", cat:"main", salt:1.4, kcal:256},
-      {n:"チーズバーガー", cat:"main", salt:1.9, kcal:307},
-      {n:"てりやきマックバーガー", cat:"main", salt:2.1, kcal:478},
-      {n:"ビッグマック", cat:"main", salt:2.6, kcal:530},
-      {n:"マックフライポテト(M)", cat:"side", salt:0.6, kcal:410, note:"塩抜き注文で約0.1g"},
-      {n:"チキンマックナゲット(5ピース)", cat:"side", salt:0.9, kcal:263, note:"ソースで+0.3〜0.5g"},
-      {n:"サイドサラダ", cat:"side", salt:0.0, kcal:15, note:"ドレッシングで+0.5〜1g"},
+      {n:"ハンバーガー", cat:"main", salt:1.4, kcal:259, fat:9.5},
+      {n:"チーズバーガー", cat:"main", salt:1.9, kcal:310, fat:13.5},
+      {n:"フィレオフィッシュ", cat:"main", salt:1.6, kcal:338, fat:14.2},
+      {n:"てりやきマックバーガー", cat:"main", salt:2.1, kcal:477, fat:30.2},
+      {n:"ビッグマック", cat:"main", salt:2.7, kcal:525, fat:28.0},
+      {n:"マックフライポテト(S)", cat:"side", salt:0.4, kcal:225, fat:11.0, note:"塩抜き注文で約0g"},
+      {n:"マックフライポテト(M)", cat:"side", salt:0.8, kcal:410, fat:20.0, note:"塩抜き注文で約0.1g"},
+      {n:"チキンマックナゲット(5ピース)", cat:"side", salt:1.2, kcal:262, fat:15.9, note:"ソースで+0.3〜0.5g"},
+      {n:"サイドサラダ", cat:"side", salt:0.0, kcal:10, fat:0.1, note:"ドレッシングで+0.5〜1g"},
     ]
   },
   {
     id:"mos", name:"モスバーガー",
-    tip:"ソース系バーガーでも塩分2g台前半。ポテトSやサラダを足しても目標内に収めやすい",
+    dataNote:"公式公表値(2026年5月20日版)より",
+    tip:"バンズの代わりにレタスの「菜摘」シリーズが塩分・カロリーとも優秀。減塩タイプの和風ドレッシングもある",
     items:[
-      {n:"モスバーガー", cat:"main", salt:2.1, kcal:367},
-      {n:"テリヤキバーガー", cat:"main", salt:2.2, kcal:378},
-      {n:"モスチーズバーガー", cat:"main", salt:2.5, kcal:413},
-      {n:"フレンチフライポテト(S)", cat:"side", salt:0.5, kcal:213},
-      {n:"グリーンサラダ", cat:"side", salt:0.1, kcal:19, note:"ドレッシングで+0.8g"},
+      {n:"モスの菜摘フィッシュ", cat:"main", salt:1.3, kcal:238, fat:16.5, note:"バンズの代わりにレタス"},
+      {n:"フィッシュバーガー", cat:"main", salt:1.9, kcal:381, fat:18.8},
+      {n:"モスバーガー", cat:"main", salt:2.3, kcal:372, fat:17.0},
+      {n:"テリヤキバーガー", cat:"main", salt:2.6, kcal:385, fat:18.2},
+      {n:"モスチーズバーガー", cat:"main", salt:2.8, kcal:425, fat:21.4},
+      {n:"フレンチフライポテト(S)", cat:"side", salt:0.5, kcal:170, fat:7.0},
+      {n:"こだわりサラダ", cat:"side", salt:0.0, kcal:19, fat:0.0, note:"減塩和風ドレッシングで+0.5g"},
     ]
   },
   {
     id:"kfc", name:"ケンタッキー",
-    tip:"オリジナルチキンは1ピース約1.7g。2ピース食べるなら他をほぼゼロに抑えるのがコツ",
+    dataNote:"公式公表値(2025年11月26日版)より",
+    tip:"オリジナルチキンは1ピース1.5g。カーネルクリスピー(0.6g)とコールスロー(0.6g)は減塩の味方",
     items:[
-      {n:"オリジナルチキン(1ピース)", cat:"main", salt:1.7, kcal:237},
-      {n:"和風チキンカツバーガー", cat:"main", salt:2.4, kcal:478},
-      {n:"カーネルクリスピー", cat:"side", salt:1.1, kcal:130},
-      {n:"ポテト(S)", cat:"side", salt:0.4, kcal:195},
-      {n:"コールスロー(S)", cat:"side", salt:0.4, kcal:92},
+      {n:"オリジナルチキン(1ピース)", cat:"main", salt:1.5, kcal:218, fat:12.8},
+      {n:"チキンフィレバーガー", cat:"main", salt:2.4, kcal:398, fat:19.7},
+      {n:"和風チキンカツバーガー", cat:"main", salt:2.0, kcal:426, fat:22.3},
+      {n:"カーネルクリスピー", cat:"side", salt:0.6, kcal:119, fat:6.6},
+      {n:"フライドポテト(S)", cat:"side", salt:1.2, kcal:195, fat:7.8},
+      {n:"コールスロー(S)", cat:"side", salt:0.6, kcal:85, fat:6.3},
+      {n:"ビスケット", cat:"side", salt:1.1, kcal:211, fat:12.5, note:"ハニーメイプル別"},
     ]
   },
 ];
@@ -433,6 +463,10 @@ const $ = (id) => document.getElementById(id);
 const fmt = (v) => (Math.round(v*10)/10).toFixed(1);
 const sumSalt = (c) => c.reduce((s,i)=>s+i.salt,0);
 const sumKcal = (c) => c.reduce((s,i)=>s+i.kcal,0);
+// 脂質: 全品目にデータがあるときだけ合計を返す(参考値の店はnull)
+const sumFat = (c) => c.every(i=>typeof i.fat==="number") ? c.reduce((s,i)=>s+i.fat,0) : null;
+// 脂質エネルギー比(脂質1g=9kcal)。適正は20〜30%、35%超は油過多の目安
+const fatRatio = (c) => { const f = sumFat(c), k = sumKcal(c); return (f===null||k===0) ? null : f*9/k; };
 const store = () => STORES.find(s=>s.id===state.storeId);
 const round1 = (v) => Math.round(v*10)/10;
 
@@ -483,6 +517,7 @@ function expandVariants(items){
         ...it, base:idx,
         salt: Math.max(0, Math.round((it.salt - it.adj.salt)*10)/10),
         kcal: it.kcal - (it.adj.kcal || 0),
+        fat: typeof it.fat==="number" ? Math.max(0, Math.round((it.fat - (it.adj.fat||0))*10)/10) : it.fat,
         adjApplied: it.adj.label,
       });
     }
@@ -502,6 +537,12 @@ function comboScore(c){
   score -= salt * 0.4;
   // 「残す」の手間ぶんはわずかに減点
   score -= c.filter(i=>i.adjApplied).length * 0.25;
+  // 栄養バランス: 脂質エネルギー比が適正(30%以下)なら加点、35%超(油過多)は超過分に応じて減点
+  const fr = fatRatio(c);
+  if (fr !== null){
+    if (fr <= 0.30) score += 0.5;
+    else if (fr > 0.35) score -= (fr - 0.35) * 8;
+  }
   return score;
 }
 
@@ -583,11 +624,18 @@ function renderCombos(){
     const rank = isNear
       ? `⚠️ 許容範囲(目標+${fmt(salt - state.budget)}g)`
       : `おすすめ ${idx+1}`;
+    const fr = fatRatio(c);
+    const fat = sumFat(c);
+    let balance = "";
+    if (fr !== null){
+      if (fr > 0.35) balance = `<span class="badge fatwarn">脂質多め</span>`;
+      else if (fr <= 0.30) balance = `<span class="badge good">バランス○</span>`;
+    }
     return `
     <div class="combo${isNear?" near":""}">
       <div class="combo-head">
-        <span class="combo-rank">${rank}</span>
-        <span class="combo-total">塩分 ${fmt(salt)} g<small>${sumKcal(c)} kcal</small></span>
+        <span class="combo-rank">${rank}${balance}</span>
+        <span class="combo-total">塩分 ${fmt(salt)} g<small>${sumKcal(c)} kcal${fat!==null?` / 脂質${fmt(fat)}g`:""}</small></span>
       </div>
       <ul>
         ${c.map(i=>`<li><span>${i.n}${i.adjApplied?`<span class="badge adj">${i.adjApplied}</span>`:""}${i.note&&!i.adjApplied?`<span class="badge">${i.note}</span>`:""}</span><span class="g">${fmt(i.salt)} g</span></li>`).join("")}
@@ -633,7 +681,9 @@ function selectedItems(){
     .map(i=>{
       const key = state.storeId+"::"+i.n;
       if (i.adj && state.adjusted.has(key)){
-        return {...i, salt:Math.max(0, round1(i.salt-i.adj.salt)), kcal:i.kcal-(i.adj.kcal||0), adjApplied:i.adj.label};
+        return {...i, salt:Math.max(0, round1(i.salt-i.adj.salt)), kcal:i.kcal-(i.adj.kcal||0),
+          fat: typeof i.fat==="number" ? Math.max(0, round1(i.fat-(i.adj.fat||0))) : i.fat,
+          adjApplied:i.adj.label};
       }
       return i;
     });
@@ -642,7 +692,10 @@ function selectedItems(){
 function renderTotal(){
   const items = selectedItems();
   const salt = sumSalt(items);
-  $("total-label").textContent = `選択中: ${items.length}品` + (items.length?` / ${sumKcal(items)} kcal`:"");
+  const fat = items.length ? sumFat(items) : null;
+  $("total-label").textContent = `選択中: ${items.length}品`
+    + (items.length ? ` / ${sumKcal(items)} kcal` : "")
+    + (fat !== null ? ` / 脂質${fmt(fat)}g` : "");
   $("total-salt").textContent = fmt(salt);
   $("total-budget").textContent = fmt(state.budget);
   const ratio = Math.min(1, salt/state.budget);
