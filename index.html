@@ -63,6 +63,7 @@
     background:var(--accent-light);border-radius:var(--radius);
     padding:10px 14px;font-size:.82rem;color:#0b6b62;margin-top:10px;
   }
+  .data-note{font-size:.7rem;margin-top:4px;opacity:.75}
 
   /* 組み合わせカード */
   .combo{
@@ -214,8 +215,9 @@
   </section>
 
   <footer>
-    ※ 食塩相当量・カロリーは各社公表の栄養成分情報をもとにした<strong>参考値(目安)</strong>です。
-    メニュー改定で変わるため、正確な値は各社公式サイトでご確認ください。
+    ※ 吉野家(2026/6/18版)・すき家(2026/7/3版)・松屋(2026/2/24版)は各社公式の栄養成分公表値に基づきます。
+    その他の店舗は<strong>参考値(目安)</strong>のため、正確な値は各社公式サイトでご確認ください。
+    いずれもメニュー改定で変わることがあります。
     腎臓疾患などで塩分制限の指示を受けている方は医師・管理栄養士の指導を優先してください。
   </footer>
 </main>
@@ -246,48 +248,54 @@
 const STORES = [
   {
     id:"yoshinoya", name:"吉野家",
-    tip:"牛皿+ごはん(別々)にすると丼より調整しやすい。みそ汁は1杯で約1.5gなので迷ったら省くのが◎",
+    dataNote:"公式公表値(2026年6月18日版)より",
+    tip:"牛皿+ごはん(別々)にすると丼より調整しやすい。みそ汁は1杯1.3gなので迷ったら省くのが◎",
     items:[
-      {n:"牛丼(小盛)", cat:"main", salt:2.2, kcal:488},
-      {n:"牛丼(並盛)", cat:"main", salt:2.7, kcal:635},
-      {n:"牛皿(並盛)", cat:"main", salt:1.9, kcal:293, note:"ごはんと組み合わせて"},
-      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:705, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.5, kcal:22}},
-      {n:"ごはん(並)", cat:"side", salt:0.0, kcal:327},
-      {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:23, note:"ドレッシングで+0.5〜1g"},
-      {n:"半熟玉子", cat:"side", salt:0.2, kcal:66},
-      {n:"お新香", cat:"side", salt:0.9, kcal:24},
-      {n:"みそ汁", cat:"soup", salt:1.5, kcal:22},
+      {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474},
+      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633},
+      {n:"牛皿(並盛)", cat:"main", salt:1.8, kcal:281, note:"ごはんと組み合わせて"},
+      {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.3, kcal:20}},
+      {n:"ごはん(並)", cat:"side", salt:0.0, kcal:343},
+      {n:"生野菜サラダ", cat:"side", salt:0.0, kcal:16, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:76},
+      {n:"お新香", cat:"side", salt:0.9, kcal:17},
+      {n:"みそ汁", cat:"soup", salt:1.3, kcal:20},
+      {n:"豚汁", cat:"soup", salt:3.3, kcal:143},
     ]
   },
   {
     id:"sukiya", name:"すき家",
-    tip:"サラダ・おんたまは塩分ほぼゼロの優秀サイド。とん汁は具だくさんだが塩分約2.2gと高め",
+    dataNote:"公式公表値(2026年7月3日版)より",
+    tip:"サラダ・おんたまは塩分ほぼゼロの優秀サイド。みそ汁は1杯2.2gと意外に高いので注意",
     items:[
-      {n:"牛丼(ミニ)", cat:"main", salt:1.9, kcal:496},
-      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:733},
-      {n:"とりそぼろ丼", cat:"main", salt:2.2, kcal:640},
-      {n:"サラダ", cat:"side", salt:0.1, kcal:26, note:"ドレッシングで+0.5〜1g"},
-      {n:"おんたま", cat:"side", salt:0.1, kcal:84},
-      {n:"お新香", cat:"side", salt:1.0, kcal:15},
-      {n:"みそ汁", cat:"soup", salt:1.6, kcal:26},
-      {n:"とん汁", cat:"soup", salt:2.2, kcal:174},
+      {n:"牛丼(ミニ)", cat:"main", salt:1.7, kcal:464},
+      {n:"牛丼(並盛)", cat:"main", salt:2.4, kcal:695},
+      {n:"旨だしとりそぼろ丼", cat:"main", salt:3.4, kcal:673},
+      {n:"サラダ", cat:"side", salt:0.1, kcal:28, note:"ドレッシングで+0.5〜1g"},
+      {n:"おんたま", cat:"side", salt:0.2, kcal:84},
+      {n:"おしんこ", cat:"side", salt:0.9, kcal:13},
+      {n:"みそ汁", cat:"soup", salt:2.2, kcal:38},
+      {n:"とん汁", cat:"soup", salt:2.8, kcal:114},
     ]
   },
   {
     id:"matsuya", name:"松屋",
-    tip:"定食に付くみそ汁は約1.6g。「みそ汁を残す」だけで焼肉定食も目標圏内に入ってくる",
+    dataNote:"公式公表値(2026年2月24日版)より",
+    tip:"主要メニューはみそ汁付きで数値も込み。「みそ汁を残す」だけで−1.5gできる",
     items:[
-      {n:"牛めし(並盛)", cat:"main", salt:2.6, kcal:692},
-      {n:"牛めし(ミニ)", cat:"main", salt:2.0, kcal:496},
-      {n:"牛焼肉定食", cat:"main", salt:4.2, kcal:730, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.6, kcal:24}},
-      {n:"カルビ焼肉定食", cat:"main", salt:4.6, kcal:830, note:"みそ汁込みの目安",
-        adj:{label:"みそ汁を残す", salt:1.6, kcal:24}},
-      {n:"生野菜", cat:"side", salt:0.0, kcal:26, note:"ドレッシングで+0.5〜1g"},
-      {n:"半熟玉子", cat:"side", salt:0.2, kcal:66},
-      {n:"みそ汁", cat:"soup", salt:1.6, kcal:24},
-      {n:"豚汁", cat:"soup", salt:2.3, kcal:170},
+      {n:"牛めし(並盛)", cat:"main", salt:3.0, kcal:687, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
+      {n:"牛めし(小盛)", cat:"main", salt:2.6, kcal:507, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
+      {n:"牛焼肉定食", cat:"main", salt:2.3, kcal:806, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
+      {n:"カルビ焼肉定食", cat:"main", salt:3.2, kcal:918, note:"みそ汁込み",
+        adj:{label:"みそ汁を残す", salt:1.5, kcal:35}},
+      {n:"生野菜", cat:"side", salt:0.1, kcal:24, note:"ドレッシングで+0.5〜1g"},
+      {n:"半熟玉子", cat:"side", salt:0.2, kcal:71},
+      {n:"みそ汁", cat:"soup", salt:1.5, kcal:35},
+      {n:"豚汁", cat:"soup", salt:3.2, kcal:243},
     ]
   },
   {
@@ -546,7 +554,8 @@ function renderStores(){
   $("stores").innerHTML = STORES.map(s =>
     `<button class="store-btn${s.id===state.storeId?" active":""}" data-id="${s.id}">${s.name}</button>`
   ).join("");
-  $("store-tip").innerHTML = "💡 " + store().tip;
+  const note = store().dataNote || "参考値(未検証)。正確な数値は公式サイトでご確認ください";
+  $("store-tip").innerHTML = "💡 " + store().tip + `<div class="data-note">📊 ${note}</div>`;
 }
 
 let lastCombos = [];
