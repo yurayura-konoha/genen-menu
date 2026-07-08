@@ -255,8 +255,8 @@ const STORES = [
     dataNote:"公式公表値(2026年6月18日版)より",
     tip:"牛皿+ごはん(別々)にすると丼より調整しやすい。みそ汁は1杯1.3gなので迷ったら省くのが◎",
     items:[
-      {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474, fat:19.6},
-      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633, fat:23.6},
+      {n:"牛丼(小盛)", cat:"main", salt:1.9, kcal:474, fat:19.6, incl:["ごはん(並)"]},
+      {n:"牛丼(並盛)", cat:"main", salt:2.5, kcal:633, fat:23.6, incl:["ごはん(並)"]},
       {n:"牛皿(並盛)", cat:"main", salt:1.8, kcal:281, fat:22.9, note:"ごはんと組み合わせて"},
       {n:"牛鮭定食", cat:"main", salt:4.0, kcal:662, fat:23.4, note:"ごはん・みそ汁込み",
         incl:["ごはん(並)","みそ汁"],
@@ -332,6 +332,7 @@ const STORES = [
     tip:"定食は塩分4.8〜5.4gと高めなので「みそ汁を残す」前提で。ばくだん丼(3.2g)が比較的優秀",
     items:[
       {n:"大戸屋ばくだん丼", cat:"main", salt:3.2, kcal:568, fat:12.0, note:"みそ汁込み",
+        incl:["五穀ご飯(普通盛)"],
         adj:{label:"みそ汁を残す", salt:1.5, kcal:25, fat:0.5}},
       {n:"鶏と野菜の黒酢あん", cat:"main", salt:4.8, kcal:952, fat:33.5, note:"定食(ご飯・みそ汁込み)",
         incl:["五穀ご飯(普通盛)"],
@@ -363,7 +364,7 @@ const STORES = [
     id:"saizeriya", name:"サイゼリヤ",
     tip:"パスタは麺自体の塩分が控えめなペペロンチーノ系が有利。粉チーズのかけすぎに注意",
     items:[
-      {n:"ミラノ風ドリア", cat:"main", salt:2.2, kcal:520},
+      {n:"ミラノ風ドリア", cat:"main", salt:2.2, kcal:520, incl:["ライス"]},
       {n:"ハンバーグステーキ", cat:"main", salt:2.4, kcal:480},
       {n:"アーリオ・オーリオ(ペペロンチーノ)", cat:"main", salt:1.5, kcal:550},
       {n:"ライス", cat:"side", salt:0.0, kcal:250},
