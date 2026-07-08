@@ -366,7 +366,7 @@ const STORES = [
     items:[
       {n:"ミラノ風ドリア", cat:"main", salt:2.2, kcal:520, incl:["ライス"]},
       {n:"ハンバーグステーキ", cat:"main", salt:2.4, kcal:480},
-      {n:"アーリオ・オーリオ(ペペロンチーノ)", cat:"main", salt:1.5, kcal:550},
+      {n:"アーリオ・オーリオ(ペペロンチーノ)", cat:"main", salt:1.5, kcal:550, incl:["ライス"]},
       {n:"ライス", cat:"side", salt:0.0, kcal:250},
       {n:"小エビのサラダ", cat:"side", salt:1.1, kcal:125},
       {n:"辛味チキン", cat:"side", salt:1.3, kcal:370},
@@ -415,8 +415,8 @@ const STORES = [
       {n:"フィレオフィッシュ", cat:"main", salt:1.6, kcal:338, fat:14.2},
       {n:"てりやきマックバーガー", cat:"main", salt:2.1, kcal:477, fat:30.2},
       {n:"ビッグマック", cat:"main", salt:2.7, kcal:525, fat:28.0},
-      {n:"マックフライポテト(S)", cat:"side", salt:0.4, kcal:225, fat:11.0, note:"塩抜き注文で約0g"},
-      {n:"マックフライポテト(M)", cat:"side", salt:0.8, kcal:410, fat:20.0, note:"塩抜き注文で約0.1g"},
+      {n:"マックフライポテト(S)", cat:"side", salt:0.4, kcal:225, fat:11.0, grp:"ポテト", note:"塩抜き注文で約0g"},
+      {n:"マックフライポテト(M)", cat:"side", salt:0.8, kcal:410, fat:20.0, grp:"ポテト", note:"塩抜き注文で約0.1g"},
       {n:"チキンマックナゲット(5ピース)", cat:"side", salt:1.2, kcal:262, fat:15.9, note:"ソースで+0.3〜0.5g"},
       {n:"サイドサラダ", cat:"side", salt:0.0, kcal:10, fat:0.1, note:"ドレッシングで+0.5〜1g"},
     ]
@@ -561,14 +561,21 @@ function buildCombos(items, budget){
   for (const base of mainBases){
     const perMain = [];
     for (const m of mains.filter(v=>v.base===base)){
-      // 定食に最初から付いているもの(incl)は重ねて提案しない
-      const usable = subs.filter(s => !(m.incl||[]).includes(s.n));
+      // 定食の付属品や不自然な重なり(丼+ごはん等)は提案しない
+      // みそ汁込みの定食には(みそ汁を残す場合を除き)汁物を重ねない
+      const mainHasSoup = (m.incl||[]).includes("みそ汁") && !m.adjApplied;
+      const usable = subs.filter(s =>
+        !(m.incl||[]).includes(s.n) &&
+        !(mainHasSoup && s.cat === "soup")
+      );
       if (m.salt <= limit) perMain.push([m]);
       for (let i=0;i<usable.length;i++){
         const c1 = [m, usable[i]];
         if (sumSalt(c1) <= limit) perMain.push(c1);
         for (let j=i+1;j<usable.length;j++){
           if (usable[i].base === usable[j].base) continue; // 同一メニューの別パターン同士は不可
+          if (usable[i].cat === "soup" && usable[j].cat === "soup") continue; // 汁物は1品まで
+          if (usable[i].grp && usable[i].grp === usable[j].grp) continue; // 同種サイド(ポテトS/M等)は1品まで
           const c2 = [m, usable[i], usable[j]];
           if (sumSalt(c2) <= limit) perMain.push(c2);
         }
