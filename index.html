@@ -52,7 +52,10 @@
   }
 
   /* 店舗 */
-  .stores{display:flex;gap:8px;flex-wrap:wrap}
+  .stores{display:block}
+  .genre{margin-bottom:10px}
+  .genre-label{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+  .genre-btns{display:flex;gap:8px;flex-wrap:wrap}
   .store-btn{
     border:1.5px solid #cfd8d6;background:#fff;border-radius:var(--radius);
     padding:10px 14px;font-size:.95rem;cursor:pointer;font-weight:600;color:var(--text);
@@ -217,9 +220,8 @@
   </section>
 
   <footer>
-    ※ 吉野家・すき家・松屋・やよい軒・大戸屋・リンガーハット・マクドナルド・モスバーガー・ケンタッキーは
-    各社公式の栄養成分公表値に基づきます(取得時期は店舗選択時に表示)。
-    ガスト・サイゼリヤ・丸亀製麺は<strong>参考値(目安)</strong>のため、正確な値は各社公式サイトでご確認ください。
+    ※ 数値の出典は店舗選択時に表示されます(「公式公表値」は各社公表の栄養成分情報、
+    「参考値」=ガスト・サイゼリヤ・丸亀製麺は目安のため公式サイトでご確認ください)。
     いずれもメニュー改定で変わることがあります。「残す」オプションの減塩幅は一部推定を含みます。
     脂質の適正判定は脂質エネルギー比(20〜30%が目安、35%超で「脂質多め」)に基づく参考情報です。
     腎臓疾患などで塩分制限の指示を受けている方は医師・管理栄養士の指導を優先してください。
@@ -305,6 +307,23 @@ const STORES = [
       {n:"半熟玉子", cat:"side", salt:0.2, kcal:71, fat:4.8},
       {n:"みそ汁", cat:"soup", salt:1.5, kcal:35, fat:1.3},
       {n:"豚汁", cat:"soup", salt:3.2, kcal:243, fat:14.9},
+    ]
+  },
+  {
+    id:"nakau", name:"なか卯",
+    dataNote:"公式公表値(2026年7月8日版)より ※つゆ残しの減塩幅は推定",
+    tip:"うどんは温より「冷やし」系がつゆが少なく低塩分。みそ汁は1杯2.5gと高いので注意",
+    items:[
+      {n:"親子丼(並盛)", cat:"main", salt:3.0, kcal:655, fat:16.5},
+      {n:"冷やしはいからうどん(並)", cat:"main", salt:2.7, kcal:356, fat:6.9},
+      {n:"はいからうどん(並)", cat:"main", salt:4.6, kcal:321, fat:6.4, note:"つゆ込み",
+        adj:{label:"つゆを残す", salt:2.3, kcal:20}},
+      {n:"きつねうどん(並)", cat:"main", salt:5.6, kcal:482, fat:17.2, note:"つゆ込み",
+        adj:{label:"つゆを残す", salt:2.8, kcal:20}},
+      {n:"こだわり卵", cat:"side", salt:0.2, kcal:82, fat:5.6},
+      {n:"彩り野菜サラダ", cat:"side", salt:0.1, kcal:19, fat:0.2, note:"ドレッシングで+0.5〜1g"},
+      {n:"みそ汁", cat:"soup", salt:2.5, kcal:61, fat:2.0},
+      {n:"具だくさんとん汁", cat:"soup", salt:3.6, kcal:167, fat:5.4},
     ]
   },
   {
@@ -403,6 +422,22 @@ const STORES = [
         adj:{label:"スープを残す", salt:4.7, kcal:90}},
       {n:"長崎皿うどん", cat:"main", salt:7.5, kcal:728, fat:37.3, note:"ソース・酢で+0.5g"},
       {n:"ぎょうざ(5個)", cat:"side", salt:0.7, kcal:199, fat:14.1, note:"タレ(10g)で+1.0g"},
+    ]
+  },
+  {
+    id:"cocoichi", name:"CoCo壱番屋",
+    dataNote:"公式公表値(2026年7月1日版)より",
+    tip:"ライス200gに減らすと約−0.6g。甘口ポーク(ライス200g)なら2.0gと優秀。トッピングは卵・野菜系が低塩",
+    items:[
+      {n:"甘口ポークカレー(ライス200g)", cat:"main", salt:2.0, kcal:483, fat:13.4},
+      {n:"ポークカレー(ライス200g)", cat:"main", salt:2.8, kcal:499, fat:14.5},
+      {n:"甘口ポークカレー", cat:"main", salt:2.5, kcal:681, fat:17.0},
+      {n:"ビーフカレー", cat:"main", salt:3.1, kcal:823, fat:29.6},
+      {n:"ポークカレー", cat:"main", salt:3.4, kcal:701, fat:18.3},
+      {n:"やさいカレー", cat:"main", salt:3.5, kcal:783, fat:20.1},
+      {n:"ヤサイサラダ", cat:"side", salt:0.0, kcal:17, fat:0.2, note:"ドレッシングで+0.5〜1g"},
+      {n:"ほうれん草(ハーフ・トッピング)", cat:"side", salt:0.1, kcal:6, fat:0.1},
+      {n:"スクランブルエッグ(ハーフ・トッピング)", cat:"side", salt:0.3, kcal:73, fat:6.0},
     ]
   },
   {
@@ -610,10 +645,23 @@ function buildCombos(items, budget){
 }
 
 // ===== 描画 =====
+const GENRES = [
+  {label:"牛丼・丼", ids:["yoshinoya","sukiya","matsuya","nakau"]},
+  {label:"定食", ids:["yayoiken","ootoya"]},
+  {label:"麺類", ids:["marugame","ringerhut"]},
+  {label:"カレー", ids:["cocoichi"]},
+  {label:"ファミレス", ids:["gusto","saizeriya"]},
+  {label:"バーガー・チキン", ids:["mcdonalds","mos","kfc"]},
+];
+
 function renderStores(){
-  $("stores").innerHTML = STORES.map(s =>
-    `<button class="store-btn${s.id===state.storeId?" active":""}" data-id="${s.id}">${s.name}</button>`
-  ).join("");
+  $("stores").innerHTML = GENRES.map(g => {
+    const btns = g.ids
+      .map(id => STORES.find(s=>s.id===id)).filter(Boolean)
+      .map(s => `<button class="store-btn${s.id===state.storeId?" active":""}" data-id="${s.id}">${s.name}</button>`)
+      .join("");
+    return btns ? `<div class="genre"><div class="genre-label">${g.label}</div><div class="genre-btns">${btns}</div></div>` : "";
+  }).join("");
   const note = store().dataNote || "参考値(未検証)。正確な数値は公式サイトでご確認ください";
   $("store-tip").innerHTML = "💡 " + store().tip + `<div class="data-note">📊 ${note}</div>`;
 }
