@@ -144,6 +144,13 @@
     border-radius:10px;padding:8px;font-size:.88rem;font-weight:700;cursor:pointer;
   }
   .empty-day{font-size:.82rem;color:var(--muted);padding:6px 0}
+  #free-entry{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+  #free-entry input, #free-entry select{
+    padding:8px 10px;border:1.5px solid #cfd8d6;border-radius:8px;font-size:.9rem;width:100%;
+    background:#fff;color:var(--text);
+  }
+  #free-entry .fe-nums{display:flex;gap:6px}
+  .use-remaining.secondary{border-color:#cfd8d6;color:var(--muted)}
 
   /* お気に入り */
   .fav{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
@@ -519,6 +526,21 @@ let dayLog = lsLoad(LS_LOG, {});
 let favs = lsLoad(LS_FAVS, []);
 const todayEntries = () => dayLog[todayKey()] || [];
 
+// 自由入力のプリセット(コンビニ・自炊などの目安値)
+const FREE_PRESETS = [
+  {n:"おにぎり(鮭)", salt:1.1, kcal:180},
+  {n:"おにぎり(ツナマヨ)", salt:1.2, kcal:230},
+  {n:"サンドイッチ(ハムたまご)", salt:1.6, kcal:300},
+  {n:"カップラーメン(汁まで)", salt:4.9, kcal:350},
+  {n:"カップラーメン(汁残し)", salt:2.5, kcal:330},
+  {n:"コンビニ弁当(幕の内)", salt:3.5, kcal:700},
+  {n:"食パン(6枚切り1枚)", salt:0.7, kcal:150},
+  {n:"みそ汁(自宅)", salt:1.5, kcal:30},
+  {n:"ヨーグルト", salt:0.1, kcal:80},
+  {n:"バナナ", salt:0.0, kcal:90},
+];
+let freeOpen = false;
+
 let toastTimer;
 function toast(msg){
   const t = $("toast");
@@ -787,6 +809,25 @@ function renderDay(){
     <div class="meter"><div style="width:${ratio*100}%;background:${over?"var(--over)":"var(--accent)"}"></div></div>
     ${rows}
     ${(!over && remain >= 0.5 && entries.length) ? `<button class="use-remaining" id="use-remaining">残り ${fmt(remain)} g を1食の目標にして提案を見る</button>` : ""}
+    <button class="use-remaining secondary" id="free-entry-toggle">${freeOpen ? "− 自由入力を閉じる" : "＋ 自由入力で記録(コンビニ・自炊など)"}</button>
+    ${freeOpen ? `
+    <div id="free-entry">
+      <select id="fe-preset">
+        <option value="">よく使う例から選ぶ(目安値・編集可)</option>
+        ${FREE_PRESETS.map((p,i)=>`<option value="${i}">${p.n} — 塩分${fmt(p.salt)}g</option>`).join("")}
+      </select>
+      <input type="text" id="fe-name" placeholder="品名(例: おにぎり 鮭)">
+      <div class="fe-nums">
+        <input type="number" id="fe-salt" step="0.1" min="0" placeholder="塩分 g(必須)">
+        <input type="number" id="fe-kcal" step="1" min="0" placeholder="kcal(任意)">
+      </div>
+      <div class="log-row"><span>記録:</span>
+        <button data-fe-slot="朝食">朝</button>
+        <button data-fe-slot="昼食">昼</button>
+        <button data-fe-slot="夕食">夜</button>
+        <button data-fe-slot="間食">間食</button>
+      </div>
+    </div>` : ""}
   `;
 }
 
@@ -877,13 +918,31 @@ $("total-bar").addEventListener("click", e=>{
   }
 });
 
-// 今日の記録カード: 削除・残り目標セット・1日目標の変更
+// 今日の記録カード: 削除・残り目標セット・1日目標の変更・自由入力
 $("day-card").addEventListener("click", e=>{
   if (e.target.dataset.del !== undefined){
     const k = todayKey();
     (dayLog[k]||[]).splice(+e.target.dataset.del, 1);
     lsSave(LS_LOG, dayLog);
     renderDay();
+    return;
+  }
+  if (e.target.id === "free-entry-toggle"){
+    freeOpen = !freeOpen;
+    renderDay();
+    return;
+  }
+  const feBtn = e.target.closest("button[data-fe-slot]");
+  if (feBtn){
+    const name = ($("fe-name").value || "").trim();
+    const salt = parseFloat($("fe-salt").value);
+    const kcal = parseInt($("fe-kcal").value, 10);
+    if (!name || isNaN(salt) || salt < 0){
+      toast("品名と塩分(g)を入力してください");
+      return;
+    }
+    freeOpen = false;
+    recordMeal(feBtn.dataset.feSlot, [{n:name, cat:"free", salt:round1(salt), kcal:isNaN(kcal)?0:kcal}], "自由入力");
     return;
   }
   if (e.target.id === "use-remaining"){
@@ -900,6 +959,13 @@ $("day-card").addEventListener("change", e=>{
   if (e.target.id === "day-target"){
     const v = parseFloat(e.target.value);
     if (!isNaN(v) && v > 0){ dayTarget = v; lsSave(LS_TARGET, dayTarget); renderDay(); }
+    return;
+  }
+  if (e.target.id === "fe-preset" && e.target.value !== ""){
+    const p = FREE_PRESETS[+e.target.value];
+    $("fe-name").value = p.n;
+    $("fe-salt").value = p.salt;
+    $("fe-kcal").value = p.kcal;
   }
 });
 
