@@ -152,6 +152,22 @@
   #free-entry .fe-nums{display:flex;gap:6px}
   .use-remaining.secondary{border-color:#cfd8d6;color:var(--muted)}
 
+  /* この1週間(棒グラフ) */
+  .week-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem;margin-bottom:6px}
+  .week-head strong{font-size:1.05rem}
+  .week-sub{color:var(--muted);font-size:.78rem}
+  .week-chart{position:relative;display:flex;align-items:flex-end;gap:8px;padding-top:16px}
+  .week-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative;z-index:1}
+  .week-bar{width:70%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0}
+  .week-bar.over{background:var(--over)}
+  .week-bar.none{background:none;border-bottom:2px solid #d5dbd9}
+  .week-val{font-size:.66rem;color:var(--muted);margin-bottom:2px;white-space:nowrap}
+  .week-val.over{color:var(--over);font-weight:700}
+  .week-day{font-size:.7rem;color:var(--muted);margin-top:4px}
+  .week-day.today{color:var(--accent);font-weight:700}
+  .week-target{position:absolute;left:0;right:0;border-top:2px dashed #b9c4c1;z-index:0}
+  .week-target span{position:absolute;right:0;top:-15px;font-size:.62rem;color:var(--muted);background:var(--card);padding:0 3px}
+
   /* お気に入り */
   .fav{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .fav .desc{flex:1;font-size:.88rem;line-height:1.4}
@@ -200,6 +216,12 @@
     <h2>今日の記録</h2>
     <p class="hint">食べたものを記録すると、1日の残り塩分が分かります(この端末のブラウザに保存されます)</p>
     <div class="day-card" id="day-card"></div>
+  </section>
+
+  <section id="week-section" style="display:none">
+    <h2>この1週間</h2>
+    <p class="hint">1日ごとの合計塩分です。減塩は週平均で見ると続けやすい</p>
+    <div class="day-card" id="week-card"></div>
   </section>
 
   <section id="fav-section" style="display:none">
@@ -831,6 +853,46 @@ function renderDay(){
   `;
 }
 
+function renderWeek(){
+  const days = [];
+  for (let d = 6; d >= 0; d--){
+    const dt = new Date(); dt.setDate(dt.getDate() - d);
+    const key = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+    const entries = dayLog[key] || [];
+    days.push({
+      label: "日月火水木金土"[dt.getDay()],
+      salt: round1(entries.reduce((s,e)=>s+e.salt,0)),
+      has: entries.length > 0,
+      today: d === 0,
+    });
+  }
+  const recorded = days.filter(x=>x.has);
+  const sec = $("week-section");
+  if (!recorded.length){ sec.style.display = "none"; return; }
+  sec.style.display = "";
+  const avg = round1(recorded.reduce((s,x)=>s+x.salt,0) / recorded.length);
+  const H = 96; // バー領域の高さ(px)
+  const maxVal = Math.max(dayTarget * 1.25, ...days.map(x=>x.salt));
+  const targetTop = 16 + (H - (dayTarget/maxVal)*H);
+  $("week-card").innerHTML = `
+    <div class="week-head">
+      <span>週平均 <strong>${fmt(avg)} g</strong>/日 ${avg<=dayTarget?"✅":"⚠️"}</span>
+      <span class="week-sub">記録${recorded.length}日 / 目標 ${fmt(dayTarget)} g/日</span>
+    </div>
+    <div class="week-chart" style="height:${16+H+22}px">
+      <div class="week-target" style="top:${targetTop}px"><span>目標${fmt(dayTarget)}g</span></div>
+      ${days.map(x=>{
+        const h = x.has ? Math.max(3, (x.salt/maxVal)*H) : 0;
+        const over = x.has && x.salt > dayTarget + EPS;
+        return `<div class="week-col" title="${x.label}曜: ${x.has ? fmt(x.salt)+" g" : "記録なし"}">
+          <span class="week-val${over?" over":""}">${x.has ? fmt(x.salt) : "−"}</span>
+          <div class="week-bar${over?" over":""}${x.has?"":" none"}" style="height:${h}px"></div>
+          <span class="week-day${x.today?" today":""}">${x.label}</span>
+        </div>`;
+      }).join("")}
+    </div>`;
+}
+
 function renderFavs(){
   const sec = $("fav-section");
   if (!favs.length){ sec.style.display = "none"; return; }
@@ -846,6 +908,10 @@ function renderFavs(){
 function renderAll(){
   renderStores(); renderCombos(); renderMenuList(); renderTotal(); renderDay(); renderFavs();
 }
+
+// 記録・目標の変更で週間ビューも追従させる
+const _renderDay = renderDay;
+renderDay = function(){ _renderDay(); renderWeek(); };
 
 // ===== イベント =====
 $("stores").addEventListener("click", e=>{
