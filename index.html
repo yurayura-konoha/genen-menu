@@ -250,7 +250,8 @@
 
   <footer>
     ※ 数値の出典は店舗選択時に表示されます(「公式公表値」は各社公表の栄養成分情報、
-    「参考値」=ガスト・サイゼリヤ・丸亀製麺は目安のため公式サイトでご確認ください)。
+    「参考値」=ガスト・サイゼリヤ・丸亀製麺・スターバックス・ドトール・コメダ珈琲店・星乃珈琲店は目安です。
+    カフェ各社は食塩相当量を公表していないため推定値になっています)。
     いずれもメニュー改定で変わることがあります。「残す」オプションの減塩幅は一部推定を含みます。
     脂質の適正判定は脂質エネルギー比(20〜30%が目安、35%超で「脂質多め」)に基づく参考情報です。
     腎臓疾患などで塩分制限の指示を受けている方は医師・管理栄養士の指導を優先してください。
@@ -422,6 +423,24 @@ const STORES = [
     ]
   },
   {
+    id:"olivenooka", name:"オリーブの丘",
+    dataNote:"公式公表値(2026年7月1日版)より",
+    tip:"パスタは2.2〜2.8gと外食イタリアンでは低め。ピザ・ドリアも単品なら3g前後に収まる",
+    items:[
+      {n:"ボロネーゼ", cat:"main", salt:2.2, kcal:531, fat:19.1},
+      {n:"アーリオオーリオ・ペペロンチーノ", cat:"main", salt:2.2, kcal:492, fat:20.6},
+      {n:"カルボナーラ", cat:"main", salt:2.8, kcal:580, fat:26.1},
+      {n:"ピッツァ・マルゲリータ", cat:"main", salt:2.8, kcal:577, fat:29.6},
+      {n:"ボローニャドリア", cat:"main", salt:2.7, kcal:526, fat:25.3},
+      {n:"チキンときのこのドリア", cat:"main", salt:3.3, kcal:574, fat:27.8},
+      {n:"グリーンサラダ", cat:"side", salt:0.7, kcal:81, fat:7.0},
+      {n:"シーザーサラダ", cat:"side", salt:1.0, kcal:185, fat:15.9},
+      {n:"ライスコロッケ(アランチーニ)", cat:"side", salt:1.6, kcal:263, fat:13.3},
+      {n:"ミニピッツァ・マルゲリータ", cat:"side", salt:1.3, kcal:205, fat:9.0},
+      {n:"コーンポタージュ", cat:"soup", salt:1.4, kcal:107, fat:4.0},
+    ]
+  },
+  {
     id:"marugame", name:"丸亀製麺",
     tip:"うどんは「つゆを残す」が最大の減塩。天ぷらは塩・つゆをつけなければ意外と低塩分",
     items:[
@@ -512,6 +531,55 @@ const STORES = [
       {n:"フライドポテト(S)", cat:"side", salt:1.2, kcal:195, fat:7.8},
       {n:"コールスロー(S)", cat:"side", salt:0.6, kcal:85, fat:6.3},
       {n:"ビスケット", cat:"side", salt:1.1, kcal:211, fat:12.5, note:"ハニーメイプル別"},
+    ]
+  },
+  {
+    id:"starbucks", name:"スターバックス",
+    tip:"ドリンクの塩分はほぼゼロ(ラテ系で0.2g前後)。塩分はフード、特にサンド類に集中している",
+    items:[
+      {n:"石窯フィローネ(ハム&チーズ)", cat:"main", salt:2.1, kcal:400},
+      {n:"あらびきソーセージパイ", cat:"main", salt:1.2, kcal:300},
+      {n:"チョコレートチャンクスコーン", cat:"side", salt:0.6, kcal:330},
+      {n:"ニューヨークチーズケーキ", cat:"side", salt:0.4, kcal:360},
+      {n:"ドリップコーヒー(Tall)", cat:"side", salt:0.0, kcal:15},
+      {n:"スターバックスラテ(Tall)", cat:"side", salt:0.2, kcal:220},
+      {n:"キャラメルマキアート(Tall)", cat:"side", salt:0.2, kcal:200},
+    ]
+  },
+  {
+    id:"doutor", name:"ドトール",
+    tip:"パン+加工肉のミラノサンドは2g台後半。ドリンクはほぼゼロなのでフード選びが鍵",
+    items:[
+      {n:"ミラノサンドA", cat:"main", salt:2.8, kcal:380},
+      {n:"ジャーマンドック", cat:"main", salt:1.3, kcal:260},
+      {n:"レタスドッグ", cat:"main", salt:1.2, kcal:230},
+      {n:"ミルクレープ", cat:"side", salt:0.2, kcal:330},
+      {n:"ブレンドコーヒー", cat:"side", salt:0.0, kcal:10},
+      {n:"カフェ・ラテ", cat:"side", salt:0.2, kcal:100},
+    ]
+  },
+  {
+    id:"komeda", name:"コメダ珈琲店",
+    tip:"パン系は1.5人前級のボリュームで塩分もカロリーも多め。シェアやハーフ活用が現実的",
+    items:[
+      {n:"モーニング(トースト+ゆで卵)", cat:"main", salt:1.0, kcal:280},
+      {n:"ミックスサンド", cat:"main", salt:2.8, kcal:560, note:"ボリューム大・シェア向き"},
+      {n:"カツパン", cat:"main", salt:4.5, kcal:1300, note:"1.5人前級・シェア推奨"},
+      {n:"ミニシロノワール", cat:"side", salt:0.4, kcal:410},
+      {n:"ブレンドコーヒー", cat:"side", salt:0.0, kcal:25},
+      {n:"カフェオーレ", cat:"side", salt:0.2, kcal:120},
+    ]
+  },
+  {
+    id:"hoshino", name:"星乃珈琲店",
+    tip:"食事系(オムライス・ナポリタン)は3g前後の見込み。パンケーキは塩分は軽いがカロリー高め",
+    items:[
+      {n:"ビーフシチューオムライス", cat:"main", salt:3.3, kcal:880},
+      {n:"ナポリタン", cat:"main", salt:2.8, kcal:750},
+      {n:"モーニング(トースト+ゆで卵)", cat:"main", salt:1.0, kcal:300},
+      {n:"窯焼きスフレパンケーキ(シングル)", cat:"side", salt:0.7, kcal:380},
+      {n:"彩り野菜のサラダ", cat:"side", salt:0.6, kcal:90, note:"ドレッシング含む目安"},
+      {n:"星乃ブレンド", cat:"side", salt:0.0, kcal:10},
     ]
   },
 ];
@@ -713,8 +781,9 @@ const GENRES = [
   {label:"定食", ids:["yayoiken","ootoya"]},
   {label:"麺類", ids:["marugame","ringerhut"]},
   {label:"カレー", ids:["cocoichi"]},
-  {label:"ファミレス", ids:["gusto","saizeriya"]},
+  {label:"ファミレス", ids:["gusto","saizeriya","olivenooka"]},
   {label:"バーガー・チキン", ids:["mcdonalds","mos","kfc"]},
+  {label:"カフェ", ids:["starbucks","doutor","komeda","hoshino"]},
 ];
 
 function renderStores(){
