@@ -502,7 +502,7 @@ const STORES = [
       {n:"マックフライポテト(M)", cat:"side", salt:0.8, kcal:410, fat:20.0, grp:"ポテト", note:"塩抜き注文で約0.1g"},
       {n:"チキンマックナゲット(5ピース)", cat:"side", salt:1.2, kcal:262, fat:15.9, note:"ソースで+0.3〜0.5g"},
       {n:"サイドサラダ", cat:"side", salt:0.0, kcal:10, fat:0.1, note:"ドレッシングで+0.5〜1g"},
-      {n:"ホットアップルパイ", cat:"side", salt:0.6, kcal:211, fat:10.9, note:"間食にも"},
+      {n:"ホットアップルパイ", cat:"sweet", salt:0.6, kcal:211, fat:10.9, note:"間食にも"},
     ]
   },
   {
@@ -539,11 +539,11 @@ const STORES = [
     items:[
       {n:"石窯フィローネ(ハム&チーズ)", cat:"main", salt:2.1, kcal:400},
       {n:"あらびきソーセージパイ", cat:"main", salt:1.2, kcal:300},
-      {n:"チョコレートチャンクスコーン", cat:"side", salt:0.6, kcal:330},
-      {n:"ニューヨークチーズケーキ", cat:"side", salt:0.4, kcal:360},
-      {n:"ドリップコーヒー(Tall)", cat:"side", salt:0.0, kcal:15},
-      {n:"スターバックスラテ(Tall)", cat:"side", salt:0.2, kcal:220},
-      {n:"キャラメルマキアート(Tall)", cat:"side", salt:0.2, kcal:200},
+      {n:"チョコレートチャンクスコーン", cat:"sweet", salt:0.6, kcal:330},
+      {n:"ニューヨークチーズケーキ", cat:"sweet", salt:0.4, kcal:360},
+      {n:"ドリップコーヒー(Tall)", cat:"drink", salt:0.0, kcal:15},
+      {n:"スターバックスラテ(Tall)", cat:"drink", salt:0.2, kcal:220},
+      {n:"キャラメルマキアート(Tall)", cat:"drink", salt:0.2, kcal:200},
     ]
   },
   {
@@ -553,9 +553,9 @@ const STORES = [
       {n:"ミラノサンドA", cat:"main", salt:2.8, kcal:380},
       {n:"ジャーマンドック", cat:"main", salt:1.3, kcal:260},
       {n:"レタスドッグ", cat:"main", salt:1.2, kcal:230},
-      {n:"ミルクレープ", cat:"side", salt:0.2, kcal:330},
-      {n:"ブレンドコーヒー", cat:"side", salt:0.0, kcal:10},
-      {n:"カフェ・ラテ", cat:"side", salt:0.2, kcal:100},
+      {n:"ミルクレープ", cat:"sweet", salt:0.2, kcal:330},
+      {n:"ブレンドコーヒー", cat:"drink", salt:0.0, kcal:10},
+      {n:"カフェ・ラテ", cat:"drink", salt:0.2, kcal:100},
     ]
   },
   {
@@ -565,9 +565,9 @@ const STORES = [
       {n:"モーニング(トースト+ゆで卵)", cat:"main", salt:1.0, kcal:280},
       {n:"ミックスサンド", cat:"main", salt:2.8, kcal:560, note:"ボリューム大・シェア向き"},
       {n:"カツパン", cat:"main", salt:4.5, kcal:1300, note:"1.5人前級・シェア推奨"},
-      {n:"ミニシロノワール", cat:"side", salt:0.4, kcal:410},
-      {n:"ブレンドコーヒー", cat:"side", salt:0.0, kcal:25},
-      {n:"カフェオーレ", cat:"side", salt:0.2, kcal:120},
+      {n:"ミニシロノワール", cat:"sweet", salt:0.4, kcal:410},
+      {n:"ブレンドコーヒー", cat:"drink", salt:0.0, kcal:25},
+      {n:"カフェオーレ", cat:"drink", salt:0.2, kcal:120},
     ]
   },
   {
@@ -577,14 +577,14 @@ const STORES = [
       {n:"ビーフシチューオムライス", cat:"main", salt:3.3, kcal:880},
       {n:"ナポリタン", cat:"main", salt:2.8, kcal:750},
       {n:"モーニング(トースト+ゆで卵)", cat:"main", salt:1.0, kcal:300},
-      {n:"窯焼きスフレパンケーキ(シングル)", cat:"side", salt:0.7, kcal:380},
+      {n:"窯焼きスフレパンケーキ(シングル)", cat:"sweet", salt:0.7, kcal:380},
       {n:"彩り野菜のサラダ", cat:"side", salt:0.6, kcal:90, note:"ドレッシング含む目安"},
-      {n:"星乃ブレンド", cat:"side", salt:0.0, kcal:10},
+      {n:"星乃ブレンド", cat:"drink", salt:0.0, kcal:10},
     ]
   },
 ];
 
-const CAT_LABEL = { main:"主菜・ごはんもの", side:"サイド・副菜", soup:"汁物" };
+const CAT_LABEL = { main:"主菜・ごはんもの", side:"サイド・副菜", sweet:"スイーツ", soup:"汁物", drink:"ドリンク" };
 
 let state = {
   storeId: STORES[0].id,
@@ -695,8 +695,12 @@ function expandVariants(items){
 function comboScore(c){
   const kcal = sumKcal(c), salt = sumSalt(c);
   let score = 0;
+  if (c[0].cat === "sweet"){
+    // お茶・間食: 食事としての量は求めない(固定の基礎点)
+    score += 1.5;
+  }
   // 食事として成立するカロリー帯(500〜800kcal)を高評価
-  if (kcal >= 500 && kcal <= 800) score += 3;
+  else if (kcal >= 500 && kcal <= 800) score += 3;
   else score += Math.max(0, 3 - Math.abs(kcal - 650) / 150);
   // 品目のバリエーション
   score += new Set(c.map(i=>i.cat)).size * 0.5;
@@ -718,8 +722,9 @@ const EPS = 0.01;      // 小数の丸め誤差ぶんの余裕
 
 function buildCombos(items, budget){
   const variants = expandVariants(items);
-  const mains = variants.filter(i=>i.cat==="main");
-  const subs  = variants.filter(i=>i.cat!=="main");
+  // スイーツは「お茶・間食」のメインとして扱い、食事メニューには相乗りさせない
+  const mains = variants.filter(i=>i.cat==="main" || i.cat==="sweet");
+  const subs  = variants.filter(i=>i.cat==="side" || i.cat==="soup" || i.cat==="drink");
   const limit = budget + TOLERANCE + EPS;
   const all = [];
   // 同じ主菜(base単位)からは上位3案まで(提案に変化をつける)
@@ -732,7 +737,8 @@ function buildCombos(items, budget){
       const mainHasSoup = (m.incl||[]).includes("みそ汁") && !m.adjApplied;
       const usable = subs.filter(s =>
         !(m.incl||[]).includes(s.n) &&
-        !(mainHasSoup && s.cat === "soup")
+        !(mainHasSoup && s.cat === "soup") &&
+        !(m.cat === "sweet" && s.cat !== "drink") // お茶メインに付けるのはドリンクだけ
       );
       if (m.salt <= limit) perMain.push([m]);
       for (let i=0;i<usable.length;i++){
@@ -741,6 +747,7 @@ function buildCombos(items, budget){
         for (let j=i+1;j<usable.length;j++){
           if (usable[i].base === usable[j].base) continue; // 同一メニューの別パターン同士は不可
           if (usable[i].cat === "soup" && usable[j].cat === "soup") continue; // 汁物は1品まで
+          if (usable[i].cat === "drink" && usable[j].cat === "drink") continue; // ドリンクは1品まで
           if (usable[i].grp && usable[i].grp === usable[j].grp) continue; // 同種サイド(ポテトS/M等)は1品まで
           const c2 = [m, usable[i], usable[j]];
           if (sumSalt(c2) <= limit) perMain.push(c2);
@@ -811,7 +818,7 @@ function renderCombos(){
     const isNear = salt > state.budget + EPS;
     const rank = isNear
       ? `⚠️ 許容範囲(目標+${fmt(salt - state.budget)}g)`
-      : `おすすめ ${idx+1}`;
+      : (c[0].cat === "sweet" ? `☕ お茶・間食向け` : `おすすめ ${idx+1}`);
     const fr = fatRatio(c);
     const fat = sumFat(c);
     let balance = "";
@@ -839,7 +846,7 @@ function renderCombos(){
 }
 
 function renderMenuList(){
-  const groups = ["main","side","soup"];
+  const groups = ["main","side","sweet","soup","drink"];
   $("menu-list").innerHTML = groups.map(cat=>{
     const items = store().items.filter(i=>i.cat===cat);
     if (!items.length) return "";
