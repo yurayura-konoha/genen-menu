@@ -548,18 +548,28 @@ let dayLog = lsLoad(LS_LOG, {});
 let favs = lsLoad(LS_FAVS, []);
 const todayEntries = () => dayLog[todayKey()] || [];
 
-// 自由入力のプリセット(コンビニ・自炊などの目安値)
+// 自由入力のプリセット(コンビニ・自炊などの目安値)。g はグループ表示用
 const FREE_PRESETS = [
-  {n:"おにぎり(鮭)", salt:1.1, kcal:180},
-  {n:"おにぎり(ツナマヨ)", salt:1.2, kcal:230},
-  {n:"サンドイッチ(ハムたまご)", salt:1.6, kcal:300},
-  {n:"カップラーメン(汁まで)", salt:4.9, kcal:350},
-  {n:"カップラーメン(汁残し)", salt:2.5, kcal:330},
-  {n:"コンビニ弁当(幕の内)", salt:3.5, kcal:700},
-  {n:"食パン(6枚切り1枚)", salt:0.7, kcal:150},
-  {n:"みそ汁(自宅)", salt:1.5, kcal:30},
-  {n:"ヨーグルト", salt:0.1, kcal:80},
-  {n:"バナナ", salt:0.0, kcal:90},
+  {g:"ごはん・パン・麺", n:"おにぎり(鮭)", salt:1.1, kcal:180},
+  {g:"ごはん・パン・麺", n:"おにぎり(ツナマヨ)", salt:1.2, kcal:230},
+  {g:"ごはん・パン・麺", n:"ごはん(茶碗1杯)", salt:0.0, kcal:230},
+  {g:"ごはん・パン・麺", n:"食パン(6枚切り1枚)", salt:0.7, kcal:150},
+  {g:"ごはん・パン・麺", n:"サンドイッチ(ハムたまご)", salt:1.6, kcal:300},
+  {g:"ごはん・パン・麺", n:"カップラーメン(汁まで)", salt:4.9, kcal:350},
+  {g:"ごはん・パン・麺", n:"カップラーメン(汁残し)", salt:2.5, kcal:330},
+  {g:"ごはん・パン・麺", n:"コンビニ弁当(幕の内)", salt:3.5, kcal:700},
+  {g:"朝食のおかず", n:"納豆(1パック・タレ付き)", salt:0.7, kcal:100},
+  {g:"朝食のおかず", n:"ロースハム(2枚)", salt:0.5, kcal:40},
+  {g:"朝食のおかず", n:"ウィンナー(3本)", salt:1.0, kcal:180},
+  {g:"朝食のおかず", n:"ベーコン(2枚)", salt:0.4, kcal:80},
+  {g:"朝食のおかず", n:"目玉焼き(塩少々)", salt:0.3, kcal:110},
+  {g:"朝食のおかず", n:"ゆで卵(塩なし)", salt:0.2, kcal:80},
+  {g:"朝食のおかず", n:"塩鮭(甘口1切れ)", salt:1.4, kcal:130},
+  {g:"朝食のおかず", n:"スライスチーズ(1枚)", salt:0.5, kcal:60},
+  {g:"朝食のおかず", n:"梅干し(1個)", salt:1.0, kcal:7},
+  {g:"汁物・その他", n:"みそ汁(自宅)", salt:1.5, kcal:30},
+  {g:"汁物・その他", n:"ヨーグルト", salt:0.1, kcal:80},
+  {g:"汁物・その他", n:"バナナ", salt:0.0, kcal:90},
 ];
 let freeOpen = false;
 
@@ -836,7 +846,12 @@ function renderDay(){
     <div id="free-entry">
       <select id="fe-preset">
         <option value="">よく使う例から選ぶ(目安値・編集可)</option>
-        ${FREE_PRESETS.map((p,i)=>`<option value="${i}">${p.n} — 塩分${fmt(p.salt)}g</option>`).join("")}
+        ${[...new Set(FREE_PRESETS.map(p=>p.g))].map(g =>
+          `<optgroup label="${g}">` +
+          FREE_PRESETS.map((p,i)=>({p,i})).filter(x=>x.p.g===g)
+            .map(x=>`<option value="${x.i}">${x.p.n} — 塩分${fmt(x.p.salt)}g</option>`).join("") +
+          `</optgroup>`
+        ).join("")}
       </select>
       <input type="text" id="fe-name" placeholder="品名(例: おにぎり 鮭)">
       <div class="fe-nums">

@@ -1,6 +1,6 @@
 // オフライン対応のサービスワーカー
 // 通信できるときはネットワーク優先(常に最新)、圏外・地下ではキャッシュから表示する
-const CACHE = "genen-menu-v7";
+const CACHE = "genen-menu-v8";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 
 self.addEventListener("install", (e) => {
