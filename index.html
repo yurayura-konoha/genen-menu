@@ -449,6 +449,71 @@ const STORES = [
     ]
   },
   {
+    id:"cocos", name:"ココス",
+    dataNote:"公式サイト公表値(2026年7月時点)より",
+    tip:"単品ハンバーグ(1.5g)+ライス(0g)が優秀。和膳・オムライス系は5g超が多いので要注意",
+    items:[
+      {n:"ビーフハンバーグステーキ", cat:"main", salt:1.5, kcal:504, fat:39.6, note:"ライスと組み合わせて"},
+      {n:"ビーフハンバーグステーキ チェダーチーズ", cat:"main", salt:1.8, kcal:552, fat:43.4},
+      {n:"ミニ!ほうれん草とベーコンのバター醤油パスタ", cat:"main", salt:1.5, kcal:383, fat:16.9},
+      {n:"ほうれん草とベーコンのバター醤油パスタ", cat:"main", salt:2.3, kcal:558, fat:23.2},
+      {n:"ベーコンの濃厚カルボナーラ", cat:"main", salt:3.2, kcal:674, fat:33.6},
+      {n:"ライス", cat:"side", salt:0.0, kcal:250, fat:0.5},
+      {n:"ココスのベイクドポテト", cat:"side", salt:0.3, kcal:144, fat:6.4},
+      {n:"サーモンのカルパッチョ", cat:"side", salt:0.1, kcal:53, fat:3.2},
+      {n:"シーザーサラダ(シェアサイズ)", cat:"side", salt:1.9, kcal:287, fat:24.4, note:"シェア向き"},
+      {n:"オニオングラタンスープのココット焼き", cat:"soup", salt:1.7, kcal:146, fat:5.3},
+    ]
+  },
+  {
+    id:"joyfull", name:"ジョイフル",
+    dataNote:"公式公表値(2026年7月7日版)より",
+    tip:"ベーコンモーニング(1.5g)とサラダ系が減塩向き。和朝食は4g前後と高め",
+    items:[
+      {n:"ベーコンモーニング(トースト)", cat:"main", salt:1.5, kcal:270, fat:12.9},
+      {n:"パワーサラダ(薄切りビーフとミックスビーンズ)", cat:"main", salt:1.9, kcal:455, fat:31.2},
+      {n:"Joyチーズインハンバーグセット", cat:"main", salt:2.6, kcal:852, fat:38.3, note:"セット(ライス込み)"},
+      {n:"グリルチキンのトマトスープセット(ライス)", cat:"main", salt:3.2, kcal:618, fat:18.0},
+      {n:"目玉焼き朝食", cat:"main", salt:3.7, kcal:522, fat:16.8},
+      {n:"サウザンサラダ", cat:"side", salt:0.3, kcal:62, fat:4.3},
+      {n:"彩りサラダ", cat:"side", salt:1.2, kcal:112, fat:5.7},
+      {n:"ごぼう唐揚げ", cat:"side", salt:1.1, kcal:330, fat:27.0},
+    ]
+  },
+  {
+    id:"hottomotto", name:"ほっともっと",
+    dataNote:"公式公表値(2026年6月1日版)より",
+    tip:"弁当は3g台が標準ライン。しゃけのり・から揚4コ(3.0g)が比較的軽い。みそ汁類は1杯2g超なので注意",
+    items:[
+      {n:"4コ入りから揚弁当", cat:"main", salt:3.0, kcal:702, fat:19.5},
+      {n:"チキン南蛮弁当", cat:"main", salt:3.0, kcal:859, fat:27.4},
+      {n:"しゃけのり弁当", cat:"main", salt:3.3, kcal:624, fat:16.5},
+      {n:"のり弁当", cat:"main", salt:3.7, kcal:770, fat:23.6},
+      {n:"幕の内弁当(豆腐ハンバーグ)", cat:"main", salt:3.9, kcal:841, fat:33.0},
+      {n:"肉野菜炒め弁当", cat:"main", salt:4.3, kcal:617, fat:16.9},
+      {n:"たっぷりグリーンサラダ", cat:"side", salt:0.4, kcal:54, fat:3.5},
+      {n:"7品目のミックスサラダ", cat:"side", salt:0.7, kcal:84, fat:4.9},
+      {n:"6種具材のひじき煮", cat:"side", salt:0.6, kcal:31, fat:0.8},
+      {n:"海苔とあおさのみそ汁", cat:"soup", salt:2.3, kcal:42, fat:1.0},
+      {n:"豚汁", cat:"soup", salt:2.2, kcal:81, fat:2.3},
+    ]
+  },
+  {
+    id:"misdo", name:"ミスタードーナツ",
+    dataNote:"公式公表値(2026年7月時点)より",
+    tip:"ドーナツは1個0.2〜0.7gと塩分は軽い(脂質とカロリーは要注意)。フレンチクルーラーが最軽量",
+    items:[
+      {n:"エビグラタンパイ", cat:"main", salt:0.9, kcal:236, fat:13.2, note:"軽食に"},
+      {n:"フレンチクルーラー", cat:"sweet", salt:0.2, kcal:148, fat:9.2},
+      {n:"エンゼルクリーム", cat:"sweet", salt:0.5, kcal:200, fat:12.0},
+      {n:"ハニーディップ", cat:"sweet", salt:0.6, kcal:216, fat:11.4},
+      {n:"ポン・デ・リング", cat:"sweet", salt:0.6, kcal:219, fat:11.8},
+      {n:"チョコレート", cat:"sweet", salt:0.5, kcal:245, fat:13.9},
+      {n:"オールドファッション", cat:"sweet", salt:0.7, kcal:281, fat:17.0},
+      {n:"ブレンドコーヒー", cat:"drink", salt:0.0, kcal:6},
+    ]
+  },
+  {
     id:"marugame", name:"丸亀製麺",
     tip:"うどんは「つゆを残す」が最大の減塩。天ぷらは塩・つゆをつけなければ意外と低塩分",
     items:[
@@ -821,9 +886,10 @@ const GENRES = [
   {label:"定食", ids:["yayoiken","ootoya"]},
   {label:"麺類", ids:["marugame","ringerhut"]},
   {label:"カレー", ids:["cocoichi"]},
-  {label:"ファミレス", ids:["gusto","saizeriya","olivenooka"]},
+  {label:"ファミレス", ids:["gusto","saizeriya","olivenooka","cocos","joyfull"]},
+  {label:"弁当", ids:["hottomotto"]},
   {label:"バーガー・チキン", ids:["mcdonalds","mos","kfc"]},
-  {label:"カフェ", ids:["starbucks","doutor","komeda","hoshino"]},
+  {label:"カフェ", ids:["starbucks","doutor","komeda","hoshino","misdo"]},
   {label:"コンビニ", ids:["conbini"]},
 ];
 
